@@ -1,13 +1,14 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig.json",
-	"extends": "@sapphire/ts-config/extra-strict",
-	"compilerOptions": {
-		"declaration": false,
-		"declarationMap": false,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"target": "ESNext",
-		"outDir": "dist",
-		"skipLibCheck": true
-	}
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "@sapphire/ts-config/extra-strict",
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "target": "ESNext",
+    "outDir": "dist",
+    "skipLibCheck": true
+  }
 }
