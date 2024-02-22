@@ -3,13 +3,12 @@
   "name": "dojo-pairer",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "tsc",
     "lint": "prettier --check . && eslint --ext .ts src",
-    "deploy": "node --require dotenv/config dist/util/deploy.js",
     "lint:fix": "prettier --write . && eslint --ext .ts --fix src",
-    "start": "node --require dotenv/config dist/index.js"
+    "start": "node --require dotenv/config dist/index.js",
+    "dev": "nodemon src/index.ts"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
@@ -22,7 +21,9 @@
     "@typescript-eslint/parser": "^7.0.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "engines": {
