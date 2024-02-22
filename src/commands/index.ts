@@ -4,13 +4,9 @@ import { discordToken, clientId } from "../config";
 import { Command } from "./types";
 import Ping from "./ping";
 
-export const commands: Command[] = [Ping];
+export const getCommands = () => [Ping];
 
-const commandLookup = Object.fromEntries(
-  commands.map((command) => [command.data.name, command]),
-);
-
-export async function deployCommands(guildId: string) {
+export async function deployCommands(commands: Command[], guildId: string) {
   const rest = new REST().setToken(discordToken);
 
   try {
@@ -31,15 +27,20 @@ export async function deployCommands(guildId: string) {
     console.error(error);
   }
 }
-export function registerCommands(client: Client): void {
+export function registerCommands(commands: Command[], client: Client): void {
+  const commandLookup: Map<string, Command> = commands.reduce(
+    (acc, command) => acc.set(command.data.name, command),
+    new Map(),
+  );
+
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isCommand()) return;
 
-    const command = commandLookup[interaction.commandName];
-
-    if (!command) {
+    if (!commandLookup.has(interaction.commandName)) {
       throw new Error(`Command '${interaction.commandName}' not found.`);
     }
+
+    const command = commandLookup.get(interaction.commandName);
 
     try {
       await command.execute(interaction);

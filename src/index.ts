@@ -2,18 +2,24 @@
 import { Client, GatewayIntentBits } from "discord.js";
 
 // Ours
-import { registerCommands, deployCommands } from "./commands/router";
-import { registerEvents } from "./events/router";
+import { getCommands, registerCommands, deployCommands } from "./commands";
+
+import { getEventHandlers, registerEvents } from "./events";
+
 import { discordToken, testGuildId } from "./config";
+
+const commands = getCommands();
+const eventHandlers = getEventHandlers();
 
 // Initialize the client
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
 
-registerCommands(client);
-registerEvents(client);
-deployCommands(testGuildId);
+registerCommands(commands, client);
+registerEvents(eventHandlers, client);
+
+deployCommands(commands, testGuildId);
 
 // Login to the client
 client.login(discordToken);

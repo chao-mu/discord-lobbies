@@ -2,10 +2,10 @@ import { Client } from "discord.js";
 import Ready from "./ready";
 import type { Event } from "./types";
 
-const eventHandlers: Event[] = [Ready];
+export const getEventHandlers = () => [Ready];
 
-export function registerEvents(client: Client) {
-  for (const event of eventHandlers) {
+export function registerEvents(events: Event[], client: Client) {
+  for (const event of events) {
     client[event.once ? "once" : "on"](event.name, async (...args) =>
       event.execute(...args),
     );
