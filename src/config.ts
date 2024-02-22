@@ -17,3 +17,4 @@ function getValue(name: string): string {
 export const discordToken = getValue("DISCORD_TOKEN");
 export const applicationId = getValue("APPLICATION_ID");
 export const testGuildId = getValue("TEST_GUILD_ID");
+export const clientId = getValue("CLIENT_ID");

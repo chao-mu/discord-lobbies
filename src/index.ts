@@ -2,10 +2,9 @@
 import { Client, GatewayIntentBits } from "discord.js";
 
 // Ours
-import { registerCommands } from "./commands/router";
+import { registerCommands, deployCommands } from "./commands/router";
 import { registerEvents } from "./events/router";
-
-import { discordToken } from "./config";
+import { discordToken, testGuildId } from "./config";
 
 // Initialize the client
 const client = new Client({
@@ -14,6 +13,7 @@ const client = new Client({
 
 registerCommands(client);
 registerEvents(client);
+deployCommands(testGuildId);
 
 // Login to the client
 client.login(discordToken);

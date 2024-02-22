@@ -1,14 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "@sapphire/ts-config/extra-strict",
   "compilerOptions": {
-    "declaration": false,
-    "declarationMap": false,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "allowImportingTsExtensions": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "noEmit": true,
     "target": "ESNext",
-    "outDir": "dist",
-    "skipLibCheck": true
+    "outDir": "dist"
   }
 }
