@@ -1,4 +1,4 @@
-import type { Command } from "./index.ts";
+import type { Command } from "./types";
 
 export default {
   data: {
