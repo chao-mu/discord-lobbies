@@ -70,7 +70,7 @@ export function registerCommands(commands: Command[], client: Client): void {
 
     try {
       await db.transaction(async (tx) => {
-        await command.execute({ interaction, tx });
+        await command.execute({ interaction, db: tx });
       });
     } catch (error) {
       console.error(`Error executing ${name}: ${error}`);

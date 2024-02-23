@@ -8,7 +8,7 @@ import type { Transaction } from "../db";
 
 export type CommandExecuteArgs = {
   interaction: ChatInputCommandInteraction;
-  tx: Transaction;
+  db: Transaction;
 };
 
 export type CommandExecuter = {

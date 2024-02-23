@@ -45,6 +45,7 @@ export const lobbiesUsers = pgTable(
       .notNull()
       .references(() => lobbies.id),
     lastJoined: timestamp("last_joined").notNull(),
+    blurb: text("blurb").notNull().default(""),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.userId, table.lobbyId] }),

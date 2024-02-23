@@ -31,18 +31,18 @@ export default {
 
     return builder;
   },
-  async execute({ interaction, tx }) {
+  async execute({ interaction, db }) {
     const lobbyName = interaction.options.getSubcommand();
-    const user = await getUser(tx, interaction.user);
+    const user = await getUser(db, interaction.user);
 
     let msg = "";
     if (lobbyName == "all") {
-      await leaveLobbies(tx, user.id);
+      await leaveLobbies(db, user.id);
 
       msg = "You have left every lobby.";
     } else {
-      const lobby = await getLobby(tx, lobbyName);
-      await leaveLobby(tx, user.id, lobby.id);
+      const lobby = await getLobby(db, lobbyName);
+      await leaveLobby(db, user.id, lobby.id);
 
       msg = `You have left the ${lobbyName} lobby`;
     }

@@ -73,15 +73,22 @@ export async function leaveLobby(
     );
 }
 
-export async function joinLobby(
-  db: Transaction,
-  userId: number,
-  lobbyId: number,
-) {
+export async function joinLobby({
+  userId,
+  lobbyId,
+  blurb,
+  db,
+}: {
+  db: Transaction;
+  userId: number;
+  lobbyId: number;
+  blurb: string;
+}) {
   const { createdAt, updatedAt } = timestampsDefaults();
   const update = {
     lastJoined: new Date(),
     updatedAt,
+    blurb,
   };
 
   const previousJoinedResult = await db
