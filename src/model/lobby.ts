@@ -12,6 +12,7 @@ export type Bulletin = {
   lobbyName: string;
   discordUsername: string;
   discordId: string;
+  userId: number;
   blurb: string;
 };
 
@@ -23,6 +24,7 @@ export function getLobbyBulletins(
     .select({
       lobbyName: lobbies.name,
       discordUsername: users.discordUsername,
+      userId: lobbiesUsers.userId,
       blurb: lobbiesUsers.blurb,
       discordId: users.discordId,
     })

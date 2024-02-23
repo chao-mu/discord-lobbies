@@ -69,7 +69,9 @@ export default {
       return;
     }
 
-    const bulletins = await getLobbyBulletins(db, lobbyName);
+    const bulletins = await getLobbyBulletins(db, lobbyName).then((bulletins) =>
+      bulletins.filter(({ userId }) => userId !== user.id),
+    );
 
     for (const { discordId } of bulletins) {
       const member = await guild.members.fetch(discordId);
@@ -78,7 +80,12 @@ export default {
       );
     }
 
-    const replyMsg = `You have joined the ${lobbyName} lobby. ${bulletins.length} other players in the lobby have been messaged.`;
+    let replyMsg = `You have joined the ${lobbyName} lobby. ${bulletins.length} other players in the lobby have been messaged.`;
+    if (bulletins.length === 0) {
+      replyMsg +=
+        "\nOh, you're the only one here :-(. Maybe play some blunder games while you wait for others to join?";
+    }
+
     await interaction.reply(replyMsg);
   },
 } satisfies CommandBuilder;
