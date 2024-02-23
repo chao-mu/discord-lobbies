@@ -1,10 +1,12 @@
 import { Client, Events, REST, Routes } from "discord.js";
 
+// Ours
 import { discordToken, clientId } from "../config";
 import { Command } from "./types";
 import Ping from "./ping";
+import JoinLobby from "./join-lobby";
 
-export const getCommands = () => [Ping];
+export const getCommands = () => [Ping, JoinLobby];
 
 export async function deployCommands(commands: Command[], guildId: string) {
   const rest = new REST().setToken(discordToken);
