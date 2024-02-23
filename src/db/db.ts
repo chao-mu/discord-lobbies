@@ -12,3 +12,5 @@ const pool = new Pool({
 });
 
 export const db = drizzle(pool);
+
+export type Transaction = typeof db & { rollback: () => void };

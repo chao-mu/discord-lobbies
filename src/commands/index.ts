@@ -5,6 +5,7 @@ import { discordToken, clientId } from "../config";
 import { Command } from "./types";
 import Ping from "./ping";
 import JoinLobby from "./join-lobby";
+import { db } from "../db";
 
 export const getCommands = () => [Ping, JoinLobby];
 
@@ -45,7 +46,9 @@ export function registerCommands(commands: Command[], client: Client): void {
     const command = commandLookup.get(interaction.commandName);
 
     try {
-      await command.execute(interaction);
+      await db.transaction(async (tx) => {
+        await command.execute({ interaction, tx });
+      });
     } catch (error) {
       console.error(error);
       await interaction.reply({

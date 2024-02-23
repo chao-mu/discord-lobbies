@@ -3,6 +3,13 @@ import type {
   CommandInteraction,
 } from "discord.js";
 
+import type { Transaction } from "../db";
+
+export type CommandExecuteArgs = {
+  interaction: CommandInteraction;
+  tx: Transaction;
+};
+
 /**
  * Defines the structure of a command
  */
@@ -16,5 +23,5 @@ export type Command = {
    *
    * @param interaction - The interaction of the command
    */
-  execute(interaction: CommandInteraction): Promise<void> | void;
+  execute(args: CommandExecuteArgs): Promise<void> | void;
 };
