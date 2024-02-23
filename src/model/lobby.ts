@@ -11,16 +11,9 @@ export type Lobby = typeof lobbies.$inferSelect;
 export type Bulletin = {
   lobbyName: string;
   discordUsername: string;
+  discordId: string;
   blurb: string;
 };
-
-export const prettyBulletinBoard = (bulletins: Bulletin[]) =>
-  bulletins
-    .map(
-      (blurb) =>
-        `**${blurb.lobbyName}** - ${blurb.discordUsername}: ${blurb.blurb}`,
-    )
-    .join("\n");
 
 export function getLobbyBulletins(
   db: DB,
@@ -31,6 +24,7 @@ export function getLobbyBulletins(
       lobbyName: lobbies.name,
       discordUsername: users.discordUsername,
       blurb: lobbiesUsers.blurb,
+      discordId: users.discordId,
     })
     .from(lobbiesUsers)
     .innerJoin(lobbies, eq(lobbiesUsers.lobbyId, lobbies.id))

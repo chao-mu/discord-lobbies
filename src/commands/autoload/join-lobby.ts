@@ -3,7 +3,12 @@ import moment from "moment";
 
 // Ours
 import type { CommandBuilder } from "@/types";
-import { getLobbies, getLobby, joinLobby } from "@/model/lobby";
+import {
+  getLobbies,
+  getLobby,
+  getLobbyBulletins,
+  joinLobby,
+} from "@/model/lobby";
 import { getUser } from "@/model/user";
 import { db } from "@/db";
 
@@ -23,7 +28,7 @@ export default {
             option
               .setName("blurb")
               .setDescription(
-                "Describe what you're looking for. Other players will see this when they join.",
+                "Describe what you're looking for. Other players will see this when you join.",
               )
               .setRequired(true),
           ),
@@ -33,6 +38,11 @@ export default {
     return builder;
   },
   async execute({ interaction, db }) {
+    const guild = interaction.guild;
+    if (!guild) {
+      await interaction.reply("This command must be used in a server");
+      return;
+    }
     const lobbyName = interaction.options.getSubcommand();
     const blurb = interaction.options.getString("blurb");
 
@@ -46,17 +56,29 @@ export default {
 
     const previousJoined = await joinLobby({
       db,
+      blurb,
       userId: user.id,
       lobbyId: lobby.id,
-      blurb: blurb,
     });
 
     if (previousJoined) {
       const timeAgo = moment(previousJoined).fromNow();
-      await interaction.reply(`You already joined ${timeAgo}!`);
+      await interaction.reply(
+        `You already joined ${timeAgo}! Renewing your timeout.`,
+      );
       return;
     }
 
-    await interaction.reply(`Joined the ${lobbyName} lobby`);
+    const bulletins = await getLobbyBulletins(db, lobbyName);
+
+    for (const { discordId } of bulletins) {
+      const member = await guild.members.fetch(discordId);
+      await member.send(
+        `${user.discordUsername} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${blurb}`,
+      );
+    }
+
+    const replyMsg = `You have joined the ${lobbyName} lobby. ${bulletins.length} other players in the lobby have been messaged.`;
+    await interaction.reply(replyMsg);
   },
 } satisfies CommandBuilder;
