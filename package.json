@@ -8,17 +8,23 @@
     "lint": "prettier --check . && eslint --ext .ts src",
     "lint:fix": "prettier --write . && eslint --ext .ts --fix src",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "ts-node src/db/migrate"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
     "discord.js": "^14.14.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.29.4",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "@types/pg": "^8.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "drizzle-kit": "^0.20.14",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "nodemon": "^3.0.3",
