@@ -13,21 +13,11 @@ export async function deployCommands(commands: Command[], guildId: string) {
   const rest = new REST().setToken(discordToken);
 
   try {
-    console.log(
-      `Started refreshing ${commands.length} application (/) commands.`,
-    );
-
-    const data = await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
-      {
-        body: commands.map((command) => command.data),
-      },
-    );
-
-    console.log(`Successfully reloaded application (/) commands.`);
-    console.log(data);
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+      body: commands.map((command) => command.data),
+    });
   } catch (error) {
-    console.error(error);
+    console.error(`Error deploying commands: ${error}`);
   }
 }
 export function registerCommands(commands: Command[], client: Client): void {
@@ -39,8 +29,10 @@ export function registerCommands(commands: Command[], client: Client): void {
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isCommand()) return;
 
-    if (!commandLookup.has(interaction.commandName)) {
-      throw new Error(`Command '${interaction.commandName}' not found.`);
+    const name = interaction.commandName;
+
+    if (!commandLookup.has(name)) {
+      throw new Error(`Command '${name}' not found.`);
     }
 
     const command = commandLookup.get(interaction.commandName);
@@ -50,7 +42,7 @@ export function registerCommands(commands: Command[], client: Client): void {
         await command.execute({ interaction, tx });
       });
     } catch (error) {
-      console.error(error);
+      console.error(`Error executing ${name}: ${error}`);
       await interaction.reply({
         content: "There was an error while executing this command!",
         ephemeral: true,
