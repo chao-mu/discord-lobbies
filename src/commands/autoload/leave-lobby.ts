@@ -1,5 +1,5 @@
 // Ours
-import type { CommandBuilder } from "@/commands/types";
+import type { CommandBuilder } from "@/types";
 
 import { getUser, getLobby, lobbies, leaveLobby, leaveLobbies, db } from "@/db";
 

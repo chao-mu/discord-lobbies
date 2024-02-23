@@ -2,7 +2,7 @@
 import moment from "moment";
 
 // Ours
-import type { CommandBuilder } from "@/commands/types";
+import type { CommandBuilder } from "@/types";
 
 import { lobbies, db, getUser, getLobby, joinLobby } from "@/db";
 

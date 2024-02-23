@@ -2,7 +2,7 @@
 import { eq } from "drizzle-orm";
 
 // Ours
-import type { CommandBuilder } from "@/commands/types";
+import type { CommandBuilder } from "@/types";
 
 import { lobbies, db, lobbiesUsers, users } from "@/db";
 

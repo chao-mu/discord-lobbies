@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import Ready from "./ready";
-import type { Event } from "./types";
+import type { Event } from "@/types";
 
 export const getEventHandlers = () => [Ready];
 

@@ -5,15 +5,9 @@ import { User } from "discord.js";
 import { eq, and } from "drizzle-orm";
 
 // Ours
-import {
-  users,
-  lobbies,
-  lobbiesUsers,
-  Transaction,
-  timestampsDefaults,
-} from "../db";
+import { users, lobbies, lobbiesUsers, DB, timestampsDefaults } from "../db";
 
-export async function getUser(db: Transaction, user: User) {
+export async function getUser(db: DB, user: User) {
   const { id, username, discriminator } = user;
   const discordUsername = `${username}#${discriminator}`;
 
@@ -44,7 +38,7 @@ export async function getUser(db: Transaction, user: User) {
   return userResults[0];
 }
 
-export async function getLobby(db: Transaction, name: string) {
+export async function getLobby(db: DB, name: string) {
   const lobbyResults = await db
     .select()
     .from(lobbies)
@@ -57,15 +51,11 @@ export async function getLobby(db: Transaction, name: string) {
   return lobbyResults[0];
 }
 
-export async function leaveLobbies(db: Transaction, userId: number) {
+export async function leaveLobbies(db: DB, userId: number) {
   await db.delete(lobbiesUsers).where(eq(lobbiesUsers.userId, userId));
 }
 
-export async function leaveLobby(
-  db: Transaction,
-  userId: number,
-  lobbyId: number,
-) {
+export async function leaveLobby(db: DB, userId: number, lobbyId: number) {
   await db
     .delete(lobbiesUsers)
     .where(
@@ -79,7 +69,7 @@ export async function joinLobby({
   blurb,
   db,
 }: {
-  db: Transaction;
+  db: DB;
   userId: number;
   lobbyId: number;
   blurb: string;

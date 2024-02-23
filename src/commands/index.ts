@@ -1,12 +1,12 @@
 import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
-import { discordToken, clientId } from "../config";
-import { Command } from "./types";
+import { discordToken, clientId } from "@/config";
+import { Command } from "@/types";
 
 import commands from "./autoload";
 
-import { db } from "../db";
+import { db } from "@/db";
 
 export async function loadCommands() {
   return Promise.all<Command>(

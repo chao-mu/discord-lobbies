@@ -1,18 +1,25 @@
+// Discord.js
 import type {
   RESTPostAPIApplicationCommandsJSONBody,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  ClientEvents,
 } from "discord.js";
 
-import type { Transaction } from "../db";
+// Ours
+import type { DB } from "@/db";
 
-export type CommandExecuteArgs = {
-  interaction: ChatInputCommandInteraction;
-  db: Transaction;
+export type Event<T extends keyof ClientEvents = keyof ClientEvents> = {
+  execute(...parameters: ClientEvents[T]): Promise<void> | void;
+  name: T;
+  once?: boolean;
 };
 
 export type CommandExecuter = {
-  execute(args: CommandExecuteArgs): Promise<void> | void;
+  execute(args: {
+    interaction: ChatInputCommandInteraction;
+    db: DB;
+  }): Promise<void> | void;
 };
 
 export type CommandBuilder = {

@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { dbHost, dbPort, dbUser, dbPassword, dbName } from "../config";
+import { dbHost, dbPort, dbUser, dbPassword, dbName } from "@/config";
 
 import * as schema from "./schema";
 
@@ -15,4 +15,4 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 
-export type Transaction = typeof db & { rollback: () => void };
+export type DB = typeof db & { rollback: () => void };
