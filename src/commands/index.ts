@@ -5,10 +5,12 @@ import { discordToken, clientId } from "../config";
 import { Command, CommandBuilder } from "./types";
 import Ping from "./ping";
 import JoinLobby from "./join-lobby";
+import LeaveLobby from "./leave-lobby";
+
 import { db } from "../db";
 
 export async function loadCommands() {
-  const commands: CommandBuilder[] = [Ping, JoinLobby];
+  const commands: CommandBuilder[] = [Ping, JoinLobby, LeaveLobby];
 
   return Promise.all<Command>(
     commands.map(async (command) => {
@@ -31,9 +33,16 @@ export async function deployCommands(commands: Command[], guildId: string) {
   try {
     const body = commands.map((command) => command.data);
 
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-      body: body,
-    });
+    const data = await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      {
+        body: body,
+      },
+    );
+
+    const count =
+      (data as { length: number })?.length ?? "an unknown number of";
+    console.log(`Successfully registered ${count} commands.`);
   } catch (error) {
     console.error(`Error deploying commands: ${error}`);
   }

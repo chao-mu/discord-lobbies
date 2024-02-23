@@ -12,9 +12,13 @@ export default {
       .setName("join-lobby")
       .setDescription("Join a lobby to be paired with other players");
 
-    const lobbiesRes = await db.select().from(lobbies);
+    const lobbiesRes = await db
+      .select({
+        name: lobbies.name,
+        description: lobbies.description,
+      })
+      .from(lobbies);
     lobbiesRes.forEach((lobby) => {
-      console.log("Registering subcommand for lobby", lobby.name);
       builder.addSubcommand((subcommand) =>
         subcommand.setName(lobby.name).setDescription(lobby.description),
       );

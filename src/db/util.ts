@@ -57,6 +57,22 @@ export async function getLobby(db: Transaction, name: string) {
   return lobbyResults[0];
 }
 
+export async function leaveLobbies(db: Transaction, userId: number) {
+  await db.delete(lobbiesUsers).where(eq(lobbiesUsers.userId, userId));
+}
+
+export async function leaveLobby(
+  db: Transaction,
+  userId: number,
+  lobbyId: number,
+) {
+  await db
+    .delete(lobbiesUsers)
+    .where(
+      and(eq(lobbiesUsers.userId, userId), eq(lobbiesUsers.lobbyId, lobbyId)),
+    );
+}
+
 export async function joinLobby(
   db: Transaction,
   userId: number,
