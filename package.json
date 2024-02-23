@@ -11,7 +11,8 @@
     "dev": "nodemon src/index.ts",
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "ts-node src/db/migrate",
-    "db:seed": "ts-node src/db/seed"
+    "db:seed": "ts-node src/db/seed",
+    "db:catchup": "npm run db:generate && npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
