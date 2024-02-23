@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "npm run generate-commands && tsc && tsc-alias",
-    "build:watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+    "build:watch": "nodemon --exec 'npm run build' --watch src --watch scripts --watch .env --delay 2s",
     "start:watch": "nodemon build/index.js --verbose --watch .env --watch build --delay 2s",
     "generate-commands:watch": "nodemon --exec 'npm run generate-commands' --watch src/commands/autoload --watch scripts",
     "generate-commands": "./scripts/generate-commands.sh | prettier --parser typescript > src/commands/autoload/index.ts",
@@ -16,7 +16,7 @@
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "npm run build && node build/db/migrate.js",
     "db:seed": "npm run build && node build/db/seed.js",
-    "db:catchup": "npm run db:build && node build/db/migrate.js && node dist/db/migrate.js && node dist/db/seed.js"
+    "db:catchup": "npm run build && node build/db/migrate.js && node build/db/migrate.js && node build/db/seed.js"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
@@ -32,7 +32,6 @@
     "@types/pg": "^8.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
-    "concurrently": "^8.2.2",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
