@@ -1,4 +1,4 @@
-import type { CommandBuilder } from "./types";
+import type { CommandBuilder } from "@/commands/types";
 
 export default {
   build: async ({ builder }) => builder.setName("ping").setDescription("Ping!"),

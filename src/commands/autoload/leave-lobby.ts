@@ -1,14 +1,7 @@
 // Ours
-import type { CommandBuilder } from "./types";
+import type { CommandBuilder } from "@/commands/types";
 
-import {
-  getUser,
-  getLobby,
-  lobbies,
-  leaveLobby,
-  leaveLobbies,
-  db,
-} from "../db";
+import { getUser, getLobby, lobbies, leaveLobby, leaveLobbies, db } from "@/db";
 
 export default {
   build: async ({ builder }) => {

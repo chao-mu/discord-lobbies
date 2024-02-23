@@ -2,17 +2,13 @@ import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
 import { discordToken, clientId } from "../config";
-import { Command, CommandBuilder } from "./types";
-import Ping from "./ping";
-import JoinLobby from "./join-lobby";
-import LeaveLobby from "./leave-lobby";
-import PeekLobby from "./peek-lobby";
+import { Command } from "./types";
+
+import commands from "./autoload";
 
 import { db } from "../db";
 
 export async function loadCommands() {
-  const commands: CommandBuilder[] = [Ping, JoinLobby, LeaveLobby, PeekLobby];
-
   return Promise.all<Command>(
     commands.map(async (command) => {
       const builder = await command.build({
@@ -49,9 +45,8 @@ export async function deployCommands(commands: Command[], guildId: string) {
   }
 }
 export function registerCommands(commands: Command[], client: Client): void {
-  const commandLookup: Map<string, Command> = commands.reduce(
-    (acc, command) => acc.set(command.data.name, command),
-    new Map(),
+  const commandLookup: Record<string, Command> = Object.fromEntries(
+    commands.map((command) => [command.data.name, command]),
   );
 
   client.on(Events.InteractionCreate, async (interaction) => {
@@ -61,13 +56,13 @@ export function registerCommands(commands: Command[], client: Client): void {
 
     const name = interaction.commandName;
 
-    if (!commandLookup.has(name)) {
+    if (!commandLookup[name]) {
       const err = `Unexpected error! Command '${name}' not found.`;
       interaction.reply(err);
       console.error(err);
     }
 
-    const command = commandLookup.get(interaction.commandName);
+    const command = commandLookup[interaction.commandName];
 
     try {
       await db.transaction(async (tx) => {

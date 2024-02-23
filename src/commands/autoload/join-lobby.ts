@@ -2,9 +2,9 @@
 import moment from "moment";
 
 // Ours
-import type { CommandBuilder } from "./types";
+import type { CommandBuilder } from "@/commands/types";
 
-import { lobbies, db, getUser, getLobby, joinLobby } from "../db";
+import { lobbies, db, getUser, getLobby, joinLobby } from "@/db";
 
 export default {
   build: async ({ builder }) => {
@@ -40,6 +40,12 @@ export default {
   async execute({ interaction, db }) {
     const lobbyName = interaction.options.getSubcommand();
     const blurb = interaction.options.getString("blurb");
+
+    if (!blurb) {
+      await interaction.reply("You must provide a blurb to join a lobby");
+      return;
+    }
+
     const user = await getUser(db, interaction.user);
     const lobby = await getLobby(db, lobbyName);
 

@@ -2,9 +2,9 @@
 import { eq } from "drizzle-orm";
 
 // Ours
-import type { CommandBuilder } from "./types";
+import type { CommandBuilder } from "@/commands/types";
 
-import { lobbies, db, lobbiesUsers, users } from "../db";
+import { lobbies, db, lobbiesUsers, users } from "@/db";
 
 type BlurbEntry = { lobbyName: string; discordUsername: string; blurb: string };
 
