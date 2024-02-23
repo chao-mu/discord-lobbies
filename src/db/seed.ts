@@ -1,5 +1,6 @@
 import { db } from "./db";
-import { lobbies, timestampsDefaults } from "./schema";
+import { lobbies } from "./schema";
+import { timestampsDefaults } from "./util";
 
 const defaultLobbies = [
   {

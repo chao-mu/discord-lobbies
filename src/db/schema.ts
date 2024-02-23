@@ -12,14 +12,6 @@ const timestamps = {
   updatedAt: timestamp("updated_at").notNull(),
 };
 
-export const timestampsDefaults = () => {
-  const now = new Date();
-  return {
-    createdAt: now,
-    updatedAt: now,
-  };
-};
-
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   ...timestamps,

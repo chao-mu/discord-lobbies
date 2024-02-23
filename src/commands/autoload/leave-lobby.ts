@@ -1,7 +1,9 @@
 // Ours
 import type { CommandBuilder } from "@/types";
 
-import { getUser, getLobby, lobbies, leaveLobby, leaveLobbies, db } from "@/db";
+import { db } from "@/db";
+import { getLobby, getLobbies, leaveLobby, leaveLobbies } from "@/model/lobby";
+import { getUser } from "@/model/user";
 
 export default {
   build: async ({ builder }) => {
@@ -13,10 +15,8 @@ export default {
       subcommand.setName("all").setDescription("Leave all lobbies"),
     );
 
-    const lobbiesRes = await db
-      .select({ name: lobbies.name, description: lobbies.description })
-      .from(lobbies);
-    lobbiesRes.forEach((lobby) => {
+    const lobbies = await getLobbies(db);
+    lobbies.forEach((lobby) => {
       builder.addSubcommand((subcommand) =>
         subcommand.setName(lobby.name).setDescription(lobby.description),
       );

@@ -1,21 +1,12 @@
-// Drizzle
-import { eq } from "drizzle-orm";
-
 // Ours
 import type { CommandBuilder } from "@/types";
 
-import { lobbies, db, lobbiesUsers, users } from "@/db";
-
-type BlurbEntry = { lobbyName: string; discordUsername: string; blurb: string };
-
-function prerttyBlurbs(blurbs: BlurbEntry[]) {
-  return blurbs
-    .map(
-      (blurb) =>
-        `**${blurb.lobbyName}** - ${blurb.discordUsername}: ${blurb.blurb}`,
-    )
-    .join("\n");
-}
+import { db } from "@/db";
+import {
+  getLobbies,
+  getLobbyBulletins,
+  prettyBulletinBoard,
+} from "@/model/lobby";
 
 export default {
   build: async ({ builder }) => {
@@ -29,10 +20,8 @@ export default {
       subcommand.setName("all").setDescription("Peek inside all lobbies"),
     );
 
-    const lobbiesRes = await db
-      .select({ name: lobbies.name, description: lobbies.description })
-      .from(lobbies);
-    lobbiesRes.forEach((lobby) => {
+    const lobbies = await getLobbies(db);
+    lobbies.forEach((lobby) => {
       builder.addSubcommand((subcommand) =>
         subcommand.setName(lobby.name).setDescription(lobby.description),
       );
@@ -43,32 +32,19 @@ export default {
   async execute({ interaction, db }) {
     const lobbyName = interaction.options.getSubcommand();
 
-    const query = db
-      .select({
-        lobbyName: lobbies.name,
-        discordUsername: users.discordUsername,
-        blurb: lobbiesUsers.blurb,
-      })
-      .from(lobbiesUsers)
-      .innerJoin(lobbies, eq(lobbiesUsers.lobbyId, lobbies.id))
-      .innerJoin(users, eq(lobbiesUsers.userId, users.id));
+    const bulletins = await getLobbyBulletins(
+      db,
+      lobbyName === "all" ? undefined : lobbyName,
+    );
 
-    let blurbs: BlurbEntry[] = [];
-
-    if (lobbyName == "all") {
-      blurbs = await query;
-    } else {
-      blurbs = await query.where(eq(lobbies.name, lobbyName));
-    }
-
-    if (blurbs.length === 0) {
+    if (bulletins.length === 0) {
       await interaction.reply(
         "No one is in that/those lobbies! Join to get notified when people join.",
       );
       return;
     }
 
-    const msg = prerttyBlurbs(blurbs);
+    const msg = prettyBulletinBoard(bulletins);
     await interaction.reply(msg);
   },
 } satisfies CommandBuilder;
