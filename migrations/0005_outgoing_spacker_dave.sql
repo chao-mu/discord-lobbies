@@ -1,0 +1,1 @@
+ALTER TABLE "lobbies_users" ADD COLUMN "blurb" text DEFAULT '' NOT NULL;

@@ -6,11 +6,12 @@ import { Command, CommandBuilder } from "./types";
 import Ping from "./ping";
 import JoinLobby from "./join-lobby";
 import LeaveLobby from "./leave-lobby";
+import PeekLobby from "./peek-lobby";
 
 import { db } from "../db";
 
 export async function loadCommands() {
-  const commands: CommandBuilder[] = [Ping, JoinLobby, LeaveLobby];
+  const commands: CommandBuilder[] = [Ping, JoinLobby, LeaveLobby, PeekLobby];
 
   return Promise.all<Command>(
     commands.map(async (command) => {
