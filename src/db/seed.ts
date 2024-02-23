@@ -4,21 +4,34 @@ import { lobbies, timestampsDefaults } from "./schema";
 const defaultLobbies = [
   {
     name: "game-reviews",
+    description: "A lobby for reviewing each other's games.",
+  },
+  {
+    name: "sparring",
+    description:
+      "A lobby for finding opponents to play sparing positions with.",
   },
 ];
 
 db.transaction(async (tx) => {
-  const existingLobbies = await tx.select().from(lobbies);
+  const { createdAt, updatedAt } = timestampsDefaults();
 
-  const base = timestampsDefaults();
+  for (const lobby of defaultLobbies) {
+    const update = {
+      ...lobby,
+      updatedAt,
+    };
 
-  for (const { name } of defaultLobbies) {
-    if (!existingLobbies.some((lobby) => lobby.name === name)) {
-      console.log(`Seeding lobby: ${name}`);
-      await tx.insert(lobbies).values({
-        ...base,
-        name,
+    await tx
+      .insert(lobbies)
+      .values({
+        ...update,
+        createdAt,
+        name: lobby.name,
+      })
+      .onConflictDoUpdate({
+        target: [lobbies.name],
+        set: update,
       });
-    }
   }
 });

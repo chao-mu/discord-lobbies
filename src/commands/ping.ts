@@ -1,11 +1,8 @@
-import type { Command } from "./types";
+import type { CommandBuilder } from "./types";
 
 export default {
-  data: {
-    name: "ping",
-    description: "Ping!",
-  },
+  build: async ({ builder }) => builder.setName("ping").setDescription("Ping!"),
   async execute({ interaction }) {
     await interaction.reply("Pong!");
   },
-} satisfies Command;
+} satisfies CommandBuilder;

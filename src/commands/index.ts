@@ -1,20 +1,38 @@
-import { Client, Events, REST, Routes } from "discord.js";
+import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
 import { discordToken, clientId } from "../config";
-import { Command } from "./types";
+import { Command, CommandBuilder } from "./types";
 import Ping from "./ping";
 import JoinLobby from "./join-lobby";
 import { db } from "../db";
 
-export const getCommands = () => [Ping, JoinLobby];
+export async function loadCommands() {
+  const commands: CommandBuilder[] = [Ping, JoinLobby];
+
+  return Promise.all<Command>(
+    commands.map(async (command) => {
+      const builder = await command.build({
+        builder: new SlashCommandBuilder(),
+      });
+      const data = builder.toJSON();
+
+      return {
+        ...command,
+        data,
+      };
+    }),
+  );
+}
 
 export async function deployCommands(commands: Command[], guildId: string) {
   const rest = new REST().setToken(discordToken);
 
   try {
+    const body = commands.map((command) => command.data);
+
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-      body: commands.map((command) => command.data),
+      body: body,
     });
   } catch (error) {
     console.error(`Error deploying commands: ${error}`);
@@ -27,12 +45,16 @@ export function registerCommands(commands: Command[], client: Client): void {
   );
 
   client.on(Events.InteractionCreate, async (interaction) => {
-    if (!interaction.isCommand()) return;
+    if (!interaction.isChatInputCommand()) {
+      return;
+    }
 
     const name = interaction.commandName;
 
     if (!commandLookup.has(name)) {
-      throw new Error(`Command '${name}' not found.`);
+      const err = `Unexpected error! Command '${name}' not found.`;
+      interaction.reply(err);
+      console.error(err);
     }
 
     const command = commandLookup.get(interaction.commandName);

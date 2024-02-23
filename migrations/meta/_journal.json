@@ -22,6 +22,20 @@
       "when": 1708669567124,
       "tag": "0002_awesome_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1708670690838,
+      "tag": "0003_nasty_killraven",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1708670725340,
+      "tag": "0004_sparkling_night_thrasher",
+      "breakpoints": true
     }
   ]
 }

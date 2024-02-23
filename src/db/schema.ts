@@ -30,7 +30,8 @@ export const users = pgTable("users", {
 export const lobbies = pgTable("lobbies", {
   id: serial("id").primaryKey(),
   ...timestamps,
-  name: text("name").notNull(),
+  name: text("name").notNull().unique(),
+  description: text("description").notNull().default(""),
 });
 
 export const lobbiesUsers = pgTable(

@@ -5,23 +5,24 @@ import { User } from "discord.js";
 import moment from "moment";
 
 // Ours
-import type { Command } from "./types";
+import type { CommandBuilder } from "./types";
 import {
   users,
   lobbies,
   lobbiesUsers,
   Transaction,
   timestampsDefaults,
+  db,
 } from "../db";
 import { eq, and } from "drizzle-orm";
 
-async function getUser(tx: Transaction, user: User) {
+async function getUser(db: Transaction, user: User) {
   const { id, username, discriminator } = user;
   const discordUsername = `${username}#${discriminator}`;
 
   const { createdAt, updatedAt } = timestampsDefaults();
 
-  await tx
+  await db
     .insert(users)
     .values({
       discordId: id,
@@ -34,7 +35,7 @@ async function getUser(tx: Transaction, user: User) {
       set: { discordUsername, updatedAt },
     });
 
-  const userResults = await tx
+  const userResults = await db
     .select()
     .from(users)
     .where(eq(users.discordId, id));
@@ -46,8 +47,8 @@ async function getUser(tx: Transaction, user: User) {
   return userResults[0];
 }
 
-async function getLobby(tx: Transaction, name: string) {
-  const lobbyResults = await tx
+async function getLobby(db: Transaction, name: string) {
+  const lobbyResults = await db
     .select()
     .from(lobbies)
     .where(eq(lobbies.name, name));
@@ -59,14 +60,14 @@ async function getLobby(tx: Transaction, name: string) {
   return lobbyResults[0];
 }
 
-async function joinLobby(tx: Transaction, userId: number, lobbyId: number) {
+async function joinLobby(db: Transaction, userId: number, lobbyId: number) {
   const { createdAt, updatedAt } = timestampsDefaults();
   const update = {
     lastJoined: new Date(),
     updatedAt,
   };
 
-  const previousJoinedResult = await tx
+  const previousJoinedResult = await db
     .select({ lastJoined: lobbiesUsers.lastJoined })
     .from(lobbiesUsers)
     .where(
@@ -75,7 +76,7 @@ async function joinLobby(tx: Transaction, userId: number, lobbyId: number) {
 
   const previousJoined = previousJoinedResult[0]?.lastJoined;
 
-  await tx
+  await db
     .insert(lobbiesUsers)
     .values({
       ...update,
@@ -92,17 +93,29 @@ async function joinLobby(tx: Transaction, userId: number, lobbyId: number) {
 }
 
 export default {
-  data: {
-    name: "join-lobby",
-    description: "Join the lobby to be paired with other players",
+  build: async ({ builder }) => {
+    builder = builder
+      .setName("join-lobby")
+      .setDescription("Join a lobby to be paired with other players");
+
+    const lobbiesRes = await db.select().from(lobbies);
+    lobbiesRes.forEach((lobby) => {
+      console.log("Registering subcommand for lobby", lobby.name);
+      builder.addSubcommand((subcommand) =>
+        subcommand.setName(lobby.name).setDescription(lobby.description),
+      );
+    });
+
+    return builder;
   },
   async execute({ interaction, tx }) {
+    const lobbyName = interaction.options.getSubcommand();
     const user = await getUser(tx, interaction.user);
-    const lobby = await getLobby(tx, "game-reviews");
+    const lobby = await getLobby(tx, lobbyName);
 
     const previousJoined = await joinLobby(tx, user.id, lobby.id);
 
-    let msg = "Joined lobby";
+    let msg = `Joined the ${lobbyName} lobby`;
     if (previousJoined) {
       const timeAgo = moment(previousJoined).fromNow();
       msg += `. Previously joined ${timeAgo}.`;
@@ -110,4 +123,4 @@ export default {
 
     await interaction.reply(msg);
   },
-} satisfies Command;
+} satisfies CommandBuilder;

@@ -1,27 +1,28 @@
 import type {
   RESTPostAPIApplicationCommandsJSONBody,
-  CommandInteraction,
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
 } from "discord.js";
 
 import type { Transaction } from "../db";
 
 export type CommandExecuteArgs = {
-  interaction: CommandInteraction;
+  interaction: ChatInputCommandInteraction;
   tx: Transaction;
 };
 
-/**
- * Defines the structure of a command
- */
-export type Command = {
-  /**
-   * The data for the command
-   */
-  data: RESTPostAPIApplicationCommandsJSONBody;
-  /**
-   * The function to execute when the command is called
-   *
-   * @param interaction - The interaction of the command
-   */
+export type CommandExecuter = {
   execute(args: CommandExecuteArgs): Promise<void> | void;
 };
+
+export type CommandBuilder = {
+  build: ({
+    builder,
+  }: {
+    builder: SlashCommandBuilder;
+  }) => Promise<SlashCommandBuilder>;
+} & CommandExecuter;
+
+export type Command = {
+  data: RESTPostAPIApplicationCommandsJSONBody;
+} & CommandExecuter;
