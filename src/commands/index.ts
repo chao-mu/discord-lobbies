@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
-import { discordToken, clientId } from "@/config";
+import config from "@/config";
 import { Command } from "@/types";
 
 import commands from "./autoload";
@@ -25,13 +25,13 @@ export async function loadCommands() {
 }
 
 export async function deployCommands(commands: Command[], guildId: string) {
-  const rest = new REST().setToken(discordToken);
+  const rest = new REST().setToken(config.discordToken);
 
   try {
     const body = commands.map((command) => command.data);
 
     const data = await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
+      Routes.applicationGuildCommands(config.clientId, guildId),
       {
         body: body,
       },

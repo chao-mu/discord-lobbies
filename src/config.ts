@@ -1,36 +1,32 @@
-// Node
-import process from "node:process";
+// Zod
+import { z } from "zod";
 
-// Load environment variables
+// Node
+import process from "process";
+
+// DotEnv
 import "dotenv/config";
 
-function getStr(name: string): string {
-  const value = process.env[name];
+const configSchema = z.object({
+  discordToken: z.string(),
+  applicationId: z.string(),
+  testGuildId: z.string(),
+  clientId: z.string(),
+  dbHost: z.string(),
+  dbPort: z.coerce.number(),
+  dbUser: z.string(),
+  dbPassword: z.string(),
+  dbName: z.string(),
+});
 
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-
-  return value;
-}
-
-function getNumber(name: string): number {
-  const value = getStr(name);
-  const parsed = Number(value);
-
-  if (Number.isNaN(parsed)) {
-    throw new Error(`Environent variable ${name} is not a number`);
-  }
-
-  return parsed;
-}
-
-export const discordToken = getStr("DISCORD_TOKEN");
-export const applicationId = getStr("APPLICATION_ID");
-export const testGuildId = getStr("TEST_GUILD_ID");
-export const clientId = getStr("CLIENT_ID");
-export const dbHost = getStr("DB_HOST");
-export const dbPort = getNumber("DB_PORT");
-export const dbUser = getStr("DB_USER");
-export const dbPassword = getStr("DB_PASSWORD");
-export const dbName = getStr("DB_NAME");
+export default configSchema.parse({
+  discordToken: process.env.DISCORD_TOKEN,
+  applicationId: process.env.APPLICATION_ID,
+  testGuildId: process.env.TEST_GUILD_ID,
+  clientId: process.env.CLIENT_ID,
+  dbHost: process.env.DB_HOST,
+  dbPort: process.env.DB_PORT,
+  dbUser: process.env.DB_USER,
+  dbPassword: process.env.DB_PASSWORD,
+  dbName: process.env.DB_NAME,
+});

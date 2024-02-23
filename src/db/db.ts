@@ -1,16 +1,16 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { dbHost, dbPort, dbUser, dbPassword, dbName } from "@/config";
+import config from "@/config";
 
 import * as schema from "./schema";
 
 const pool = new Pool({
-  host: dbHost,
-  port: dbPort,
-  user: dbUser,
-  password: dbPassword,
-  database: dbName,
+  host: config.dbHost,
+  port: config.dbPort,
+  user: config.dbUser,
+  password: config.dbPassword,
+  database: config.dbName,
 });
 
 export const db = drizzle(pool, { schema });

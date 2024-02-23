@@ -4,7 +4,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 // Ours
 import { loadCommands, registerCommands, deployCommands } from "./commands";
 import { getEventHandlers, registerEvents } from "./events";
-import { discordToken, testGuildId } from "./config";
+import config from "./config";
 
 (async () => {
   const commands = await loadCommands();
@@ -18,8 +18,8 @@ import { discordToken, testGuildId } from "./config";
   registerCommands(commands, client);
   registerEvents(eventHandlers, client);
 
-  deployCommands(commands, testGuildId);
+  deployCommands(commands, config.testGuildId);
 
   // Login to the client
-  await client.login(discordToken);
+  await client.login(config.discordToken);
 })();
