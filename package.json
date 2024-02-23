@@ -10,7 +10,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "db:generate": "drizzle-kit generate:pg",
-    "db:migrate": "ts-node src/db/migrate"
+    "db:migrate": "ts-node src/db/migrate",
+    "db:seed": "ts-node src/db/seed"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
