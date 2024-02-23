@@ -20,7 +20,8 @@ const base = {
 
 export const users = pgTable("users", {
   ...base,
-  discordId: text("discord_id").notNull(),
+  discordId: text("discord_id").notNull().unique(),
+  discordUsername: text("discord_username").notNull(),
 });
 
 export const lobbies = pgTable("lobbies", {
