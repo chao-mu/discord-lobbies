@@ -15,6 +15,13 @@
       "when": 1708667435008,
       "tag": "0001_fantastic_human_robot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708669567124,
+      "tag": "0002_awesome_the_renegades",
+      "breakpoints": true
     }
   ]
 }

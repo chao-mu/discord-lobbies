@@ -1,4 +1,11 @@
-import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  integer,
+  primaryKey,
+} from "drizzle-orm/pg-core";
 
 const timestamps = {
   createdAt: timestamp("created_at").notNull(),
@@ -13,28 +20,32 @@ export const timestampsDefaults = () => {
   };
 };
 
-const base = {
-  ...timestamps,
-  id: serial("id").primaryKey(),
-};
-
 export const users = pgTable("users", {
-  ...base,
+  id: serial("id").primaryKey(),
+  ...timestamps,
   discordId: text("discord_id").notNull().unique(),
   discordUsername: text("discord_username").notNull(),
 });
 
 export const lobbies = pgTable("lobbies", {
-  ...base,
+  id: serial("id").primaryKey(),
+  ...timestamps,
   name: text("name").notNull(),
 });
 
-export const lobbiesUsers = pgTable("lobbies_users", {
-  createdAt: timestamp("created_at").notNull(),
-  userId: integer("user_id")
-    .notNull()
-    .references(() => users.id),
-  lobbyId: integer("lobby_id")
-    .notNull()
-    .references(() => lobbies.id),
-});
+export const lobbiesUsers = pgTable(
+  "lobbies_users",
+  {
+    ...timestamps,
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    lobbyId: integer("lobby_id")
+      .notNull()
+      .references(() => lobbies.id),
+    lastJoined: timestamp("last_joined").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.lobbyId] }),
+  }),
+);

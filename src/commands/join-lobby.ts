@@ -1,10 +1,19 @@
 // Discord
 import { User } from "discord.js";
 
+// Moment
+import moment from "moment";
+
 // Ours
 import type { Command } from "./types";
-import { users, Transaction, timestampsDefaults } from "../db";
-import { eq } from "drizzle-orm";
+import {
+  users,
+  lobbies,
+  lobbiesUsers,
+  Transaction,
+  timestampsDefaults,
+} from "../db";
+import { eq, and } from "drizzle-orm";
 
 async function getUser(tx: Transaction, user: User) {
   const { id, username, discriminator } = user;
@@ -37,6 +46,51 @@ async function getUser(tx: Transaction, user: User) {
   return userResults[0];
 }
 
+async function getLobby(tx: Transaction, name: string) {
+  const lobbyResults = await tx
+    .select()
+    .from(lobbies)
+    .where(eq(lobbies.name, name));
+
+  if (lobbyResults.length === 0) {
+    throw new Error(`Lobby ${name} not found`);
+  }
+
+  return lobbyResults[0];
+}
+
+async function joinLobby(tx: Transaction, userId: number, lobbyId: number) {
+  const { createdAt, updatedAt } = timestampsDefaults();
+  const update = {
+    lastJoined: new Date(),
+    updatedAt,
+  };
+
+  const previousJoinedResult = await tx
+    .select({ lastJoined: lobbiesUsers.lastJoined })
+    .from(lobbiesUsers)
+    .where(
+      and(eq(lobbiesUsers.userId, userId), eq(lobbiesUsers.lobbyId, lobbyId)),
+    );
+
+  const previousJoined = previousJoinedResult[0]?.lastJoined;
+
+  await tx
+    .insert(lobbiesUsers)
+    .values({
+      ...update,
+      createdAt,
+      userId: userId,
+      lobbyId: lobbyId,
+    })
+    .onConflictDoUpdate({
+      target: [lobbiesUsers.userId, lobbiesUsers.lobbyId],
+      set: update,
+    });
+
+  return previousJoined;
+}
+
 export default {
   data: {
     name: "join-lobby",
@@ -44,7 +98,16 @@ export default {
   },
   async execute({ interaction, tx }) {
     const user = await getUser(tx, interaction.user);
-    console.log("User", user);
-    await interaction.reply("You have been added to the lobby.");
+    const lobby = await getLobby(tx, "game-reviews");
+
+    const previousJoined = await joinLobby(tx, user.id, lobby.id);
+
+    let msg = "Joined lobby";
+    if (previousJoined) {
+      const timeAgo = moment(previousJoined).fromNow();
+      msg += `. Previously joined ${timeAgo}.`;
+    }
+
+    await interaction.reply(msg);
   },
 } satisfies Command;
