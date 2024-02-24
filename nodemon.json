@@ -1,5 +1,0 @@
-{
-  "verbose": true,
-  "ignore": ["**/autoload/index.ts"],
-  "watch": ["src/**/*"]
-}
