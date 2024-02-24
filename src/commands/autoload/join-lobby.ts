@@ -1,6 +1,16 @@
 // Moment
 import moment from "moment";
 
+// Discord.js
+import {
+  GuildMember,
+  Guild,
+  User as DiscordUser,
+  ChannelType,
+  TextChannel,
+  ThreadAutoArchiveDuration,
+} from "discord.js";
+
 // Ours
 import type { CommandBuilder } from "@/types";
 import {
@@ -8,9 +18,48 @@ import {
   getLobby,
   getLobbyBulletins,
   joinLobby,
+  Lobby,
 } from "@/model/lobby";
 import { getUser } from "@/model/user";
 import { db } from "@/db";
+
+async function alertLobbyMember({
+  member,
+  channel,
+  lobby,
+  bulletin,
+  joiner,
+  guild,
+}: {
+  member: GuildMember;
+  lobby: Lobby;
+  channel: TextChannel;
+  guild: Guild;
+  bulletin: string;
+  joiner: DiscordUser;
+}) {
+  const lobbyName = lobby.name;
+
+  console.log("creating thread");
+  const thread = await channel.threads.create({
+    name: `lobby-thread (${lobbyName})`,
+    autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+    type: ChannelType.PrivateThread,
+    reason: "Lobby member alert",
+  });
+
+  console.log("adding members");
+  await thread.members.add(member.id);
+  await thread.members.add(joiner.id);
+
+  console.log("sending message");
+  const threadLink = `<#${thread.id}>`;
+  await member.send(
+    `${joiner.displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${bulletin}. Say hi in ${threadLink}!`,
+  );
+
+  console.log("done!");
+}
 
 export default {
   build: async ({ builder }) => {
@@ -55,6 +104,12 @@ export default {
       return;
     }
 
+    const channel = interaction.channel;
+    if (!(channel instanceof TextChannel)) {
+      await interaction.reply("This command must be used in a channel");
+      return;
+    }
+
     const user = await getUser(db, interaction.user);
     const lobby = await getLobby(db, lobbyName);
 
@@ -80,11 +135,15 @@ export default {
 
     for (const { discordId } of bulletins) {
       const member = await guild.members.fetch(discordId);
-      const displayName = interaction.user.displayName;
 
-      await member.send(
-        `${displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${bulletin}`,
-      );
+      await alertLobbyMember({
+        member,
+        lobby,
+        guild,
+        channel,
+        bulletin,
+        joiner: interaction.user,
+      });
     }
 
     let replyMsg = `You have joined the ${lobbyName} lobby. The ${bulletins.length} other players in the lobby have been messaged.`;
