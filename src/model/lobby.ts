@@ -14,7 +14,7 @@ export type Bulletin = {
   discordId: string;
   discordGuildId: string;
   userId: number;
-  blurb: string;
+  bulletin: string;
 };
 
 export function getLobbyBulletins(
@@ -28,7 +28,7 @@ export function getLobbyBulletins(
       lobbyName: lobbies.name,
       discordUsername: users.discordUsername,
       userId: lobbiesUsers.userId,
-      blurb: lobbiesUsers.blurb,
+      bulletin: lobbiesUsers.bulletin,
       discordId: users.discordId,
       discordGuildId: lobbiesUsers.discordGuildId,
     })
@@ -81,20 +81,20 @@ export async function joinLobby({
   userId,
   lobbyId,
   discordGuildId,
-  blurb,
+  bulletin,
   db,
 }: {
   db: DB;
   userId: number;
   lobbyId: number;
   discordGuildId: string;
-  blurb: string;
+  bulletin: string;
 }): Promise<Date> {
   const { createdAt, updatedAt } = timestampsDefaults();
   const update = {
     lastJoined: new Date(),
     updatedAt,
-    blurb,
+    bulletin,
     discordGuildId,
   };
 

@@ -26,7 +26,7 @@ export default {
           .setDescription(lobby.description)
           .addStringOption((option) =>
             option
-              .setName("blurb")
+              .setName("bulletin")
               .setDescription(
                 "Describe what you're looking for. Other players will see this when you join.",
               )
@@ -49,9 +49,9 @@ export default {
       return;
     }
 
-    const blurb = interaction.options.getString("blurb");
-    if (!blurb) {
-      await interaction.reply("You must provide a blurb to join a lobby");
+    const bulletin = interaction.options.getString("bulletin");
+    if (!bulletin) {
+      await interaction.reply("You must provide a bulletin to join a lobby");
       return;
     }
 
@@ -60,7 +60,7 @@ export default {
 
     const previousJoined = await joinLobby({
       db,
-      blurb,
+      bulletin,
       userId: user.id,
       lobbyId: lobby.id,
       discordGuildId: guild.id,
@@ -83,7 +83,7 @@ export default {
       const displayName = interaction.user.displayName;
 
       await member.send(
-        `${displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${blurb}`,
+        `${displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${bulletin}`,
       );
     }
 

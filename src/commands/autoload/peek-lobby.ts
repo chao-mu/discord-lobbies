@@ -7,8 +7,8 @@ import { getLobbies, getLobbyBulletins, Bulletin } from "@/model/lobby";
 const prettyBulletinBoard = (bulletins: Bulletin[]) =>
   bulletins
     .map(
-      (blurb) =>
-        `**${blurb.lobbyName}** - ${blurb.discordUsername}: ${blurb.blurb}`,
+      (bulletin) =>
+        `**${bulletin.lobbyName}** - ${bulletin.discordUsername}: ${bulletin.bulletin}`,
     )
     .join("\n");
 

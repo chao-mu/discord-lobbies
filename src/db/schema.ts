@@ -37,7 +37,7 @@ export const lobbiesUsers = pgTable(
       .references(() => lobbies.id),
     lastJoined: timestamp("last_joined").notNull(),
     discordGuildId: text("discord_guild_id").notNull(),
-    blurb: text("blurb").notNull().default(""),
+    bulletin: text("bulletin").notNull().default(""),
   },
   (table) => ({
     pk: primaryKey({
