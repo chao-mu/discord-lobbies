@@ -4,7 +4,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 // Ours
 import { loadCommands, registerCommands, deployCommands } from "./commands";
 import { getEventHandlers, registerEvents } from "./events";
-import config from "./config";
+import { config } from "./config";
 
 (async () => {
   const commands = await loadCommands();

@@ -11,7 +11,6 @@ const timestamps = {
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 };
-
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   ...timestamps,
@@ -37,9 +36,12 @@ export const lobbiesUsers = pgTable(
       .notNull()
       .references(() => lobbies.id),
     lastJoined: timestamp("last_joined").notNull(),
+    discordGuildId: text("discord_guild_id").notNull(),
     blurb: text("blurb").notNull().default(""),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.userId, table.lobbyId] }),
+    pk: primaryKey({
+      columns: [table.userId, table.lobbyId, table.discordGuildId],
+    }),
   }),
 );

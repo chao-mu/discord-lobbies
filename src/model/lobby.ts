@@ -12,14 +12,17 @@ export type Bulletin = {
   lobbyName: string;
   discordUsername: string;
   discordId: string;
+  discordGuildId: string;
   userId: number;
   blurb: string;
 };
 
 export function getLobbyBulletins(
   db: DB,
+  discordGuildId: string,
   lobbyName?: string,
 ): Promise<Bulletin[]> {
+  const conditions = [eq(lobbiesUsers.discordGuildId, discordGuildId)];
   const query = db
     .select({
       lobbyName: lobbies.name,
@@ -27,16 +30,23 @@ export function getLobbyBulletins(
       userId: lobbiesUsers.userId,
       blurb: lobbiesUsers.blurb,
       discordId: users.discordId,
+      discordGuildId: lobbiesUsers.discordGuildId,
     })
     .from(lobbiesUsers)
-    .innerJoin(lobbies, eq(lobbiesUsers.lobbyId, lobbies.id))
+    .innerJoin(
+      lobbies,
+      and(
+        eq(lobbiesUsers.lobbyId, lobbies.id),
+        eq(lobbiesUsers.discordGuildId, discordGuildId),
+      ),
+    )
     .innerJoin(users, eq(lobbiesUsers.userId, users.id));
 
   if (lobbyName) {
-    return query.where(eq(lobbies.name, lobbyName));
+    conditions.push(eq(lobbies.name, lobbyName));
   }
 
-  return query;
+  return query.where(and(...conditions));
 }
 
 export const getLobbies = (db: DB): Promise<Lobby[]> =>
@@ -70,12 +80,14 @@ export async function leaveLobby(db: DB, userId: number, lobbyId: number) {
 export async function joinLobby({
   userId,
   lobbyId,
+  discordGuildId,
   blurb,
   db,
 }: {
   db: DB;
   userId: number;
   lobbyId: number;
+  discordGuildId: string;
   blurb: string;
 }): Promise<Date> {
   const { createdAt, updatedAt } = timestampsDefaults();
@@ -83,6 +95,7 @@ export async function joinLobby({
     lastJoined: new Date(),
     updatedAt,
     blurb,
+    discordGuildId,
   };
 
   const previousJoinedResult = await db

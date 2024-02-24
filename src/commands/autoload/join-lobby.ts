@@ -44,8 +44,12 @@ export default {
       return;
     }
     const lobbyName = interaction.options.getSubcommand();
-    const blurb = interaction.options.getString("blurb");
+    if (!lobbyName) {
+      await interaction.reply("You must provide a lobby name");
+      return;
+    }
 
+    const blurb = interaction.options.getString("blurb");
     if (!blurb) {
       await interaction.reply("You must provide a blurb to join a lobby");
       return;
@@ -59,6 +63,7 @@ export default {
       blurb,
       userId: user.id,
       lobbyId: lobby.id,
+      discordGuildId: guild.id,
     });
 
     if (previousJoined) {
@@ -69,18 +74,20 @@ export default {
       return;
     }
 
-    const bulletins = await getLobbyBulletins(db, lobbyName).then((bulletins) =>
-      bulletins.filter(({ userId }) => userId !== user.id),
+    const bulletins = await getLobbyBulletins(db, guild.id, lobbyName).then(
+      (bulletins) => bulletins.filter(({ userId }) => userId !== user.id),
     );
 
     for (const { discordId } of bulletins) {
       const member = await guild.members.fetch(discordId);
+      const displayName = interaction.user.displayName;
+
       await member.send(
-        `${user.discordUsername} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${blurb}`,
+        `${displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${blurb}`,
       );
     }
 
-    let replyMsg = `You have joined the ${lobbyName} lobby. ${bulletins.length} other players in the lobby have been messaged.`;
+    let replyMsg = `You have joined the ${lobbyName} lobby. The ${bulletins.length} other players in the lobby have been messaged.`;
     if (bulletins.length === 0) {
       replyMsg +=
         "\nOh, you're the only one here :-(. Maybe play some blunder games while you wait for others to join?";

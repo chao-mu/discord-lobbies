@@ -34,10 +34,20 @@ export default {
     return builder;
   },
   async execute({ interaction, db }) {
+    if (!interaction.guild) {
+      await interaction.reply("This command must be used in a server");
+      return;
+    }
+
     const lobbyName = interaction.options.getSubcommand();
+    if (!lobbyName) {
+      await interaction.reply("You must provide a lobby name");
+      return;
+    }
 
     const bulletins = await getLobbyBulletins(
       db,
+      interaction.guild.id,
       lobbyName === "all" ? undefined : lobbyName,
     );
 

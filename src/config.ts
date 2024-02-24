@@ -19,7 +19,7 @@ const configSchema = z.object({
   dbName: z.string(),
 });
 
-export default configSchema.parse({
+export const config = configSchema.parse({
   discordToken: process.env.DISCORD_TOKEN,
   applicationId: process.env.APPLICATION_ID,
   testGuildId: process.env.TEST_GUILD_ID,

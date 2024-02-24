@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
-import config from "@/config";
+import { config } from "@/config";
 import { Command } from "@/types";
 
 import commands from "./autoload";
