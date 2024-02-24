@@ -1,5 +1,5 @@
 {
-  "id": "7d27ebb7-371e-4d41-9e03-a4d54b8bff28",
+  "id": "e40ea487-5c8c-4f8e-9c9d-9bc8204c8db2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -8,6 +8,12 @@
       "name": "lobbies",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -20,23 +26,32 @@
           "primaryKey": false,
           "notNull": true
         },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "lobbies_name_unique": {
+          "name": "lobbies_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      }
     },
     "lobbies_users": {
       "name": "lobbies_users",
@@ -44,6 +59,12 @@
       "columns": {
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
@@ -59,6 +80,25 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "last_joined": {
+          "name": "last_joined",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discord_guild_id": {
+          "name": "discord_guild_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "blurb": {
+          "name": "blurb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
         }
       },
       "indexes": {},
@@ -90,13 +130,28 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "lobbies_users_user_id_lobby_id_discord_guild_id_pk": {
+          "name": "lobbies_users_user_id_lobby_id_discord_guild_id_pk",
+          "columns": [
+            "user_id",
+            "lobby_id",
+            "discord_guild_id"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "users": {
       "name": "users",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -109,14 +164,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "discord_id": {
           "name": "discord_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discord_username": {
+          "name": "discord_username",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -125,7 +180,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "users_discord_id_unique": {
+          "name": "users_discord_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "discord_id"
+          ]
+        }
+      }
     }
   },
   "enums": {},

@@ -1,21 +1,30 @@
 CREATE TABLE IF NOT EXISTS "lobbies" (
+	"id" serial PRIMARY KEY NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL,
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	"description" text DEFAULT '' NOT NULL,
+	CONSTRAINT "lobbies_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "lobbies_users" (
 	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
 	"user_id" integer NOT NULL,
-	"lobby_id" integer NOT NULL
+	"lobby_id" integer NOT NULL,
+	"last_joined" timestamp NOT NULL,
+	"discord_guild_id" text NOT NULL,
+	"blurb" text DEFAULT '' NOT NULL,
+	CONSTRAINT "lobbies_users_user_id_lobby_id_discord_guild_id_pk" PRIMARY KEY("user_id","lobby_id","discord_guild_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
+	"id" serial PRIMARY KEY NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL,
-	"id" serial PRIMARY KEY NOT NULL,
-	"discord_id" text NOT NULL
+	"discord_id" text NOT NULL,
+	"discord_username" text NOT NULL,
+	CONSTRAINT "users_discord_id_unique" UNIQUE("discord_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN

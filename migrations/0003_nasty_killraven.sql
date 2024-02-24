@@ -1,1 +1,0 @@
-ALTER TABLE "lobbies" ADD COLUMN "description" text DEFAULT '' NOT NULL;

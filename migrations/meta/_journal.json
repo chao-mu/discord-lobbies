@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1708664906288,
-      "tag": "0000_even_zuras",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1708667435008,
-      "tag": "0001_fantastic_human_robot",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1708669567124,
-      "tag": "0002_awesome_the_renegades",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1708670690838,
-      "tag": "0003_nasty_killraven",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1708670725340,
-      "tag": "0004_sparkling_night_thrasher",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1708678380827,
-      "tag": "0005_outgoing_spacker_dave",
+      "when": 1708797234491,
+      "tag": "0000_goofy_silver_samurai",
       "breakpoints": true
     }
   ]

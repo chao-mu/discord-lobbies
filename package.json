@@ -16,7 +16,7 @@
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "npm run build && node build/db/migrate.js",
     "db:seed": "npm run build && node build/db/seed.js",
-    "db:catchup": "npm run build && node build/db/migrate.js && node build/db/seed.js"
+    "db:catchup": "npm run build && npm run db:generate && node build/db/migrate.js && node build/db/seed.js"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",

@@ -116,7 +116,11 @@ export async function joinLobby({
       lobbyId: lobbyId,
     })
     .onConflictDoUpdate({
-      target: [lobbiesUsers.userId, lobbiesUsers.lobbyId],
+      target: [
+        lobbiesUsers.userId,
+        lobbiesUsers.lobbyId,
+        lobbiesUsers.discordGuildId,
+      ],
       set: update,
     });
 
