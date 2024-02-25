@@ -6,13 +6,10 @@ import {
   GuildMember,
   Guild,
   User as DiscordUser,
-  ChannelType,
   TextChannel,
-  ThreadAutoArchiveDuration,
   ButtonStyle,
   ButtonBuilder,
   ActionRowBuilder,
-  MessageCreateOptions,
 } from "discord.js";
 
 // Ours
@@ -21,23 +18,30 @@ import {
   getLobbies,
   getLobby,
   getLobbyBulletins,
+  leaveLobbies,
   joinLobby,
   Lobby,
 } from "@/model/lobby";
-import { getUser } from "@/model/user";
+import { getOrUpsertUser } from "@/model/user";
 import { db } from "@/db";
 
-function buildInviteOffer({
-  joinerName,
-  lobbyName,
-  guildName,
+async function inviteLobbyMember({
+  member,
+  memberUserId,
+  joiner,
+  lobby,
+  guild,
   bulletin,
+  channel,
 }: {
-  joinerName: string;
-  lobbyName: string;
-  guildName: string;
+  member: GuildMember;
+  memberUserId: number;
+  joiner: DiscordUser;
+  lobby: Lobby;
+  guild: Guild;
   bulletin: string;
-}): MessageCreateOptions {
+  channel: TextChannel;
+}) {
   const accept = new ButtonBuilder()
     .setCustomId("accept")
     .setLabel("Accept")
@@ -46,45 +50,54 @@ function buildInviteOffer({
   const decline = new ButtonBuilder()
     .setCustomId("decline")
     .setLabel("Decline")
-    .setStyle(ButtonStyle.Danger);
+    .setStyle(ButtonStyle.Secondary);
+
+  const unsubscribe = new ButtonBuilder()
+    .setCustomId("leave")
+    .setLabel("Leave all lobbies")
+    .setStyle(ButtonStyle.Secondary);
 
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
     accept,
     decline,
+    unsubscribe,
   );
 
-  return {
-    content: `${joinerName} has joined the ${lobbyName} lobby on ${guildName}. They're looking for: ${bulletin}.`,
-    components: [row],
-  };
-}
-
-async function createThread({
-  lobby,
-  member,
-  joiner,
-  channel,
-}: {
-  member: GuildMember;
-  lobby: Lobby;
-  channel: TextChannel;
-  guild: Guild;
-  bulletin: string;
-  joiner: DiscordUser;
-}) {
+  const joinerName = joiner.displayName;
   const lobbyName = lobby.name;
 
-  const thread = await channel.threads.create({
-    name: `lobby-thread (${lobbyName})`,
-    autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
-    type: ChannelType.PrivateThread,
-    reason: "Lobby member alert",
+  const messageContent = `${joinerName} joined ${lobbyName}. Their bulletin: ${bulletin}.`;
+
+  const message = await member.send({
+    content: messageContent,
+    components: [row],
   });
 
-  await thread.members.add(member.id);
-  await thread.members.add(joiner.id);
-
-  return thread;
+  message
+    .createMessageComponentCollector({
+      time: 60 * 1000,
+    })
+    .on("collect", async (i) => {
+      if (i.customId === "leave") {
+        await leaveLobbies(db, memberUserId);
+        await message.reply(
+          "You have left all lobbies. You will need to rejoin to resume receiving these notifications.",
+        );
+      } else if (i.customId === "decline") {
+        await message.reply("You have declined the offer.");
+      } else if (i.customId === "accept") {
+        await message.reply(
+          `You have accepted and they have been notified! Proceed to <#${channel.id}> to meet the user!`,
+        );
+        await joiner.dmChannel?.send(
+          `${member.displayName} has accepted your offer! Perhaps offer to help them with what they need as well? Proceed to <#${channel.id}> to message the user!`,
+        );
+      }
+      await i.update({
+        content: messageContent,
+        components: [],
+      });
+    });
 }
 
 export default {
@@ -136,7 +149,7 @@ export default {
       return;
     }
 
-    const user = await getUser(db, interaction.user);
+    const user = await getOrUpsertUser(db, interaction.user);
     const lobby = await getLobby(db, lobbyName);
 
     const previousJoined = await joinLobby({
@@ -159,21 +172,22 @@ export default {
       (bulletins) => bulletins.filter(({ userId }) => userId !== user.id),
     );
 
-    for (const { discordId } of bulletins) {
+    for (const { discordId, userId } of bulletins) {
       const member = await guild.members.fetch(discordId);
 
       if (!member) {
         continue;
       }
 
-      await member.send(
-        buildInviteOffer({
-          joinerName: interaction.user.displayName,
-          lobbyName,
-          guildName: guild.name,
-          bulletin,
-        }),
-      );
+      await inviteLobbyMember({
+        member,
+        memberUserId: userId,
+        joiner: interaction.user,
+        lobby,
+        guild,
+        bulletin,
+        channel,
+      });
     }
 
     let replyMsg = `You have joined the ${lobbyName} lobby. The ${bulletins.length} other players in the lobby have been messaged.`;

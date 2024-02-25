@@ -3,7 +3,7 @@ import type { CommandBuilder } from "@/types";
 
 import { db } from "@/db";
 import { getLobby, getLobbies, leaveLobby, leaveLobbies } from "@/model/lobby";
-import { getUser } from "@/model/user";
+import { getOrUpsertUser } from "@/model/user";
 
 export default {
   build: async ({ builder }) => {
@@ -26,7 +26,7 @@ export default {
   },
   async execute({ interaction, db }) {
     const lobbyName = interaction.options.getSubcommand();
-    const user = await getUser(db, interaction.user);
+    const user = await getOrUpsertUser(db, interaction.user);
 
     let msg = "";
     if (lobbyName == "all") {

@@ -9,6 +9,7 @@ import { timestampsDefaults } from "@/db/util";
 export type Lobby = typeof lobbies.$inferSelect;
 
 export type Bulletin = {
+  id: number;
   lobbyName: string;
   discordUsername: string;
   discordId: string;
@@ -25,6 +26,7 @@ export function getLobbyBulletins(
   const conditions = [eq(bulletins.discordGuildId, discordGuildId)];
   const query = db
     .select({
+      id: bulletins.id,
       lobbyName: lobbies.name,
       discordUsername: users.discordUsername,
       userId: bulletins.userId,

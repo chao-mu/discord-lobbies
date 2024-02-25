@@ -9,7 +9,16 @@ import { DB } from "@/db";
 import { users } from "@/db/schema";
 import { timestampsDefaults } from "@/db/util";
 
-export async function getUser(db: DB, user: DiscordUser) {
+type User = typeof users.$inferSelect;
+
+export async function getUser(db: DB, discordId: string) {
+  return await db.select().from(users).where(eq(users.discordId, discordId));
+}
+
+export async function getOrUpsertUser(
+  db: DB,
+  user: DiscordUser,
+): Promise<User> {
   const { id, username, discriminator } = user;
   const discordUsername = `${username}#${discriminator}`;
 

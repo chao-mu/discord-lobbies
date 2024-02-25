@@ -4,7 +4,7 @@ import {
   text,
   timestamp,
   integer,
-  primaryKey,
+  unique,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -28,6 +28,7 @@ export const lobbies = pgTable("lobbies", {
 export const bulletins = pgTable(
   "bulletins",
   {
+    id: serial("id").primaryKey(),
     ...timestamps,
     userId: integer("user_id")
       .notNull()
@@ -40,8 +41,6 @@ export const bulletins = pgTable(
     bulletin: text("bulletin").notNull().default(""),
   },
   (table) => ({
-    pk: primaryKey({
-      columns: [table.userId, table.lobbyId, table.discordGuildId],
-    }),
+    unq: unique().on(table.userId, table.lobbyId, table.discordGuildId),
   }),
 );

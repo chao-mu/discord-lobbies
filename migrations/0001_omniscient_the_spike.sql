@@ -1,1 +1,0 @@
-ALTER TABLE "lobbies_users" RENAME COLUMN "blurb" TO "bulletin";
