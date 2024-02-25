@@ -9,6 +9,10 @@ import {
   ChannelType,
   TextChannel,
   ThreadAutoArchiveDuration,
+  ButtonStyle,
+  ButtonBuilder,
+  ActionRowBuilder,
+  MessageCreateOptions,
 } from "discord.js";
 
 // Ours
@@ -23,13 +27,43 @@ import {
 import { getUser } from "@/model/user";
 import { db } from "@/db";
 
-async function alertLobbyMember({
-  member,
-  channel,
-  lobby,
+function buildInviteOffer({
+  joinerName,
+  lobbyName,
+  guildName,
   bulletin,
+}: {
+  joinerName: string;
+  lobbyName: string;
+  guildName: string;
+  bulletin: string;
+}): MessageCreateOptions {
+  const accept = new ButtonBuilder()
+    .setCustomId("accept")
+    .setLabel("Accept")
+    .setStyle(ButtonStyle.Primary);
+
+  const decline = new ButtonBuilder()
+    .setCustomId("decline")
+    .setLabel("Decline")
+    .setStyle(ButtonStyle.Danger);
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    accept,
+    decline,
+  );
+
+  return {
+    content: `${joinerName} has joined the ${lobbyName} lobby on ${guildName}. They're looking for: ${bulletin}.`,
+    components: [row],
+  };
+}
+
+async function createThread({
+  lobby,
+  member,
   joiner,
-  guild,
+  channel,
 }: {
   member: GuildMember;
   lobby: Lobby;
@@ -40,7 +74,6 @@ async function alertLobbyMember({
 }) {
   const lobbyName = lobby.name;
 
-  console.log("creating thread");
   const thread = await channel.threads.create({
     name: `lobby-thread (${lobbyName})`,
     autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
@@ -48,17 +81,10 @@ async function alertLobbyMember({
     reason: "Lobby member alert",
   });
 
-  console.log("adding members");
   await thread.members.add(member.id);
   await thread.members.add(joiner.id);
 
-  console.log("sending message");
-  const threadLink = `<#${thread.id}>`;
-  await member.send(
-    `${joiner.displayName} has joined the ${lobbyName} lobby on ${guild.name}. They're looking for: ${bulletin}. Say hi in ${threadLink}!`,
-  );
-
-  console.log("done!");
+  return thread;
 }
 
 export default {
@@ -136,14 +162,18 @@ export default {
     for (const { discordId } of bulletins) {
       const member = await guild.members.fetch(discordId);
 
-      await alertLobbyMember({
-        member,
-        lobby,
-        guild,
-        channel,
-        bulletin,
-        joiner: interaction.user,
-      });
+      if (!member) {
+        continue;
+      }
+
+      await member.send(
+        buildInviteOffer({
+          joinerName: interaction.user.displayName,
+          lobbyName,
+          guildName: guild.name,
+          bulletin,
+        }),
+      );
     }
 
     let replyMsg = `You have joined the ${lobbyName} lobby. The ${bulletins.length} other players in the lobby have been messaged.`;
