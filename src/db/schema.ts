@@ -25,8 +25,8 @@ export const lobbies = pgTable("lobbies", {
   description: text("description").notNull().default(""),
 });
 
-export const lobbiesUsers = pgTable(
-  "lobbies_users",
+export const bulletins = pgTable(
+  "bulletins",
   {
     ...timestamps,
     userId: integer("user_id")

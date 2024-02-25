@@ -15,6 +15,13 @@
       "when": 1708797639950,
       "tag": "0001_omniscient_the_spike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708889032391,
+      "tag": "0002_clear_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@
 import { eq, and } from "drizzle-orm";
 
 // Ours
-import { lobbies, lobbiesUsers, users } from "@/db/schema";
+import { lobbies, bulletins, users } from "@/db/schema";
 import { DB } from "@/db";
 import { timestampsDefaults } from "@/db/util";
 
@@ -22,25 +22,25 @@ export function getLobbyBulletins(
   discordGuildId: string,
   lobbyName?: string,
 ): Promise<Bulletin[]> {
-  const conditions = [eq(lobbiesUsers.discordGuildId, discordGuildId)];
+  const conditions = [eq(bulletins.discordGuildId, discordGuildId)];
   const query = db
     .select({
       lobbyName: lobbies.name,
       discordUsername: users.discordUsername,
-      userId: lobbiesUsers.userId,
-      bulletin: lobbiesUsers.bulletin,
+      userId: bulletins.userId,
+      bulletin: bulletins.bulletin,
       discordId: users.discordId,
-      discordGuildId: lobbiesUsers.discordGuildId,
+      discordGuildId: bulletins.discordGuildId,
     })
-    .from(lobbiesUsers)
+    .from(bulletins)
     .innerJoin(
       lobbies,
       and(
-        eq(lobbiesUsers.lobbyId, lobbies.id),
-        eq(lobbiesUsers.discordGuildId, discordGuildId),
+        eq(bulletins.lobbyId, lobbies.id),
+        eq(bulletins.discordGuildId, discordGuildId),
       ),
     )
-    .innerJoin(users, eq(lobbiesUsers.userId, users.id));
+    .innerJoin(users, eq(bulletins.userId, users.id));
 
   if (lobbyName) {
     conditions.push(eq(lobbies.name, lobbyName));
@@ -66,15 +66,13 @@ export async function getLobby(db: DB, name: string) {
 }
 
 export async function leaveLobbies(db: DB, userId: number) {
-  await db.delete(lobbiesUsers).where(eq(lobbiesUsers.userId, userId));
+  await db.delete(bulletins).where(eq(bulletins.userId, userId));
 }
 
 export async function leaveLobby(db: DB, userId: number, lobbyId: number) {
   await db
-    .delete(lobbiesUsers)
-    .where(
-      and(eq(lobbiesUsers.userId, userId), eq(lobbiesUsers.lobbyId, lobbyId)),
-    );
+    .delete(bulletins)
+    .where(and(eq(bulletins.userId, userId), eq(bulletins.lobbyId, lobbyId)));
 }
 
 export async function joinLobby({
@@ -99,16 +97,14 @@ export async function joinLobby({
   };
 
   const previousJoinedResult = await db
-    .select({ lastJoined: lobbiesUsers.lastJoined })
-    .from(lobbiesUsers)
-    .where(
-      and(eq(lobbiesUsers.userId, userId), eq(lobbiesUsers.lobbyId, lobbyId)),
-    );
+    .select({ lastJoined: bulletins.lastJoined })
+    .from(bulletins)
+    .where(and(eq(bulletins.userId, userId), eq(bulletins.lobbyId, lobbyId)));
 
   const previousJoined = previousJoinedResult[0]?.lastJoined;
 
   await db
-    .insert(lobbiesUsers)
+    .insert(bulletins)
     .values({
       ...update,
       createdAt,
@@ -116,11 +112,7 @@ export async function joinLobby({
       lobbyId: lobbyId,
     })
     .onConflictDoUpdate({
-      target: [
-        lobbiesUsers.userId,
-        lobbiesUsers.lobbyId,
-        lobbiesUsers.discordGuildId,
-      ],
+      target: [bulletins.userId, bulletins.lobbyId, bulletins.discordGuildId],
       set: update,
     });
 
