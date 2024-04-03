@@ -1,5 +1,5 @@
 // Discord.js
-import { DiscordAPIError, Guild, TextChannel } from "discord.js";
+import { Guild, TextChannel } from "discord.js";
 
 // Ours
 import { DB } from "@/db";
@@ -26,7 +26,21 @@ export async function purgeLobbyMessages({
       continue;
     }
 
-    const message = await channel.messages.fetch(discordMessageId);
+    const message = await channel.messages
+      .fetch(discordMessageId)
+      .catch((err) => {
+        // Unknown Message (message may have already been deleted)
+        if ("code" in err && err.code == 10008) {
+          return;
+        }
+
+        throw err;
+      });
+
+    if (!message) {
+      continue;
+    }
+
     await message.delete();
   }
 
