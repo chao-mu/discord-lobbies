@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "npm run generate-commands && tsc && tsc-alias",
-    "build:watch": "nodemon --exec 'npm run build' --watch src --watch scripts --watch .env --delay 2s",
+    "build:watch": "nodemon --exec 'npm run build' --watch src --watch scripts --watch .env --delay 2s -e ts,tsx --ignore src/commands/autoload/index.ts",
     "start:watch": "nodemon build/index.js --verbose --watch .env --watch build --delay 2s",
     "generate-commands": "./scripts/generate-commands.sh",
     "dev": "concurrently \"npm run start:watch\" \"npm run generate-commands:watch\" \"npm run build:watch\"",
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
+    "concurrently": "^8.2.2",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.29.4",
