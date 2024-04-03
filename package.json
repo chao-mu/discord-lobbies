@@ -5,9 +5,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && tsc-alias",
-    "build:watch": "nodemon --exec 'npm run build' --delay 2s -e ts,tsx,js,json --ignore src/commands/autoload/index.ts --ignore node_modules --ignore build",
-    "start:watch": "nodemon build/index.js --verbose --watch .env --watch build --delay 2s",
-    "dev": "concurrently \"npm run start:watch\" \"npm run build:watch\"",
+    "dev": "nodemon --exec 'npm run build && ts-node build/index.js' --delay 2s -e ts,tsx,js,json --ignore src/commands/autoload/index.ts --ignore node_modules --ignore build",
     "lint": "prettier --check src && eslint --ext .ts src",
     "lint:fix": "prettier --write src && eslint --ext .ts --fix src",
     "start": "node build/index.js",
