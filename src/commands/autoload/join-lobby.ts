@@ -10,6 +10,9 @@ import {
   ButtonStyle,
   ButtonBuilder,
   ActionRowBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } from "discord.js";
 
 // Ours
@@ -17,7 +20,6 @@ import type { CommandBuilder } from "@/types";
 import {
   getLobbies,
   getLobby,
-  getLobbyBulletins,
   leaveLobbies,
   joinLobby,
   Lobby,
@@ -100,6 +102,31 @@ async function inviteLobbyMember({
     });
 }
 
+function buildJoinModal() {
+  const modal = new ModalBuilder()
+    .setCustomId("join-lobby")
+    .setTitle("Join Lobby");
+
+  const timeInput = new TextInputBuilder()
+    .setCustomId("timeInput")
+    .setRequired()
+    .setLabel("How many minutes to remain in lobby")
+    .setStyle(TextInputStyle.Short);
+
+  const bulletin = new TextInputBuilder()
+    .setCustomId("bulletin")
+    .setRequired()
+    .setLabel("What you're looking for")
+    .setStyle(TextInputStyle.Paragraph);
+
+  modal.addComponents(
+    new ActionRowBuilder<TextInputBuilder>().addComponents(timeInput),
+    new ActionRowBuilder<TextInputBuilder>().addComponents(bulletin),
+  );
+
+  return modal;
+}
+
 export default {
   build: async ({ builder }) => {
     builder = builder
@@ -160,6 +187,7 @@ export default {
       discordGuildId: guild.id,
     });
 
+    /*
     if (previousJoined) {
       const timeAgo = moment(previousJoined).fromNow();
       await interaction.reply(
@@ -193,9 +221,11 @@ export default {
     let replyMsg = `You have joined the ${lobbyName} lobby. The ${bulletins.length} other players in the lobby have been messaged.`;
     if (bulletins.length === 0) {
       replyMsg +=
-        "\nOh, you're the only one here :-(. Maybe play some blunder games while you wait for others to join?";
+        "\nOh, you're the only one here :-(. Maybe analyze some games while you wait for others to join?";
     }
+    */
 
-    await interaction.reply(replyMsg);
+    const modal = buildJoinModal();
+    await interaction.showModal(modal);
   },
 } satisfies CommandBuilder;
