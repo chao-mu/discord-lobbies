@@ -1,12 +1,17 @@
+// Discord.js
 import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
 
 // Ours
 import { config } from "@/config";
-import { Command } from "@/types";
-
-import commands from "./autoload";
-
 import { db } from "@/db";
+import type { Command, CommandBuilder } from "@/types";
+
+// Ours - Commands
+import PeekLobby from "./peek-lobby";
+import LeaveLobby from "./leave-lobby";
+import JoinLobby from "./join-lobby";
+
+export const commands: CommandBuilder[] = [PeekLobby, LeaveLobby, JoinLobby];
 
 export async function loadCommands() {
   return Promise.all<Command>(
