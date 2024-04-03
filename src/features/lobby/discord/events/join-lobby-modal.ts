@@ -10,7 +10,7 @@ import {
 import { getLobby, joinLobby } from "@/features/lobby/model";
 import { db } from "@/db";
 import { getOrUpsertUser } from "@/features/user/model";
-import { broadcastLobbyUpdate } from "./leave-lobby-button";
+import { broadcastLobbyUpdate } from "../util";
 
 export default {
   name: Events.InteractionCreate,

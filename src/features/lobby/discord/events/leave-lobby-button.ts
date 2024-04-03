@@ -1,54 +1,16 @@
 // Discord.js
-import { Events, Guild } from "discord.js";
+import { Events } from "discord.js";
 
 // Ours
 import type { Event } from "@/discord/events";
 import {
-  buildLobbyActions,
-  buildLobbyEmbed,
   getLobbyIdFromCustomId,
   leaveLobbyButtonIdPrefix,
 } from "@/features/lobby/discord/ui";
-import {
-  Lobby,
-  getLobby,
-  getLobbyBulletins,
-  getLobbyEmbeds,
-  leaveLobby,
-} from "@/features/lobby/model";
-import { type DB, db } from "@/db";
+import { getLobby, leaveLobby } from "@/features/lobby/model";
+import { db } from "@/db";
 import { getOrUpsertUser } from "@/features/user/model";
-
-export async function broadcastLobbyUpdate({
-  db,
-  lobby,
-  guild,
-}: {
-  db: DB;
-  lobby: Lobby;
-  guild: Guild;
-}) {
-  const bulletins = await getLobbyBulletins(db, guild.id, lobby.name);
-  const payload = {
-    embeds: [buildLobbyEmbed(lobby, bulletins)],
-    components: [buildLobbyActions(lobby)],
-  };
-
-  const existingEmbeds = await getLobbyEmbeds(db, lobby.id);
-  for (const { discordChannelId, discordMessageId } of existingEmbeds) {
-    const channel = await guild.channels.fetch(discordChannelId);
-    if (!channel) {
-      continue;
-    }
-
-    if (!channel.isTextBased()) {
-      continue;
-    }
-
-    const message = await channel.messages.fetch(discordMessageId);
-    await message.edit(payload);
-  }
-}
+import { broadcastLobbyUpdate } from "../util";
 
 export default {
   name: Events.InteractionCreate,
