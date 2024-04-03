@@ -54,7 +54,20 @@ export function getLobbyBulletins(
 export const getLobbies = (db: DB): Promise<Lobby[]> =>
   db.select().from(lobbies);
 
-export async function getLobby(db: DB, name: string) {
+export async function getLobby(db: DB, id: number) {
+  const lobbyResults = await db
+    .select()
+    .from(lobbies)
+    .where(eq(lobbies.id, id));
+
+  if (lobbyResults.length === 0) {
+    throw new Error(`Lobby with id ${id} not found`);
+  }
+
+  return lobbyResults[0];
+}
+
+export async function getLobbyByName(db: DB, name: string) {
   const lobbyResults = await db
     .select()
     .from(lobbies)

@@ -13,6 +13,6 @@ const pool = new Pool({
   database: config.dbName,
 });
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(pool, { schema, logger: true });
 
 export type DB = typeof db;

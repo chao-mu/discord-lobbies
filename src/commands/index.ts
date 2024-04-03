@@ -8,10 +8,9 @@ import type { Command, CommandBuilder } from "@/types";
 
 // Ours - Commands
 import PeekLobby from "./peek-lobby";
-import LeaveLobby from "./leave-lobby";
-import JoinLobby from "./join-lobby";
+import ShowLobby from "./show-lobby";
 
-export const commands: CommandBuilder[] = [PeekLobby, LeaveLobby, JoinLobby];
+export const commands: CommandBuilder[] = [PeekLobby, ShowLobby];
 
 export async function loadCommands() {
   return Promise.all<Command>(
