@@ -2,22 +2,22 @@
 import { Events, Guild } from "discord.js";
 
 // Ours
-import type { Event } from "@/types";
+import type { Event } from "@/discord/events";
 import {
   buildLobbyActions,
   buildLobbyEmbed,
   getLobbyIdFromCustomId,
   leaveLobbyButtonIdPrefix,
-} from "@/ui/lobby";
+} from "@/features/lobby/discord/ui";
 import {
   Lobby,
   getLobby,
   getLobbyBulletins,
   getLobbyEmbeds,
   leaveLobby,
-} from "@/model/lobby";
+} from "@/features/lobby/model";
 import { type DB, db } from "@/db";
-import { getOrUpsertUser } from "@/model/user";
+import { getOrUpsertUser } from "@/features/user/model";
 
 export async function broadcastLobbyUpdate({
   db,

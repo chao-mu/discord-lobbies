@@ -2,11 +2,14 @@
 import { Events } from "discord.js";
 
 // Ours
-import type { Event } from "@/types";
-import { getLobbyIdFromCustomId, joinLobbyModalIdPrefix } from "@/ui/lobby";
-import { getLobby, joinLobby } from "@/model/lobby";
+import type { Event } from "@/discord/events";
+import {
+  getLobbyIdFromCustomId,
+  joinLobbyModalIdPrefix,
+} from "@/features/lobby/discord/ui";
+import { getLobby, joinLobby } from "@/features/lobby/model";
 import { db } from "@/db";
-import { getOrUpsertUser } from "@/model/user";
+import { getOrUpsertUser } from "@/features/user/model";
 import { broadcastLobbyUpdate } from "./leave-lobby-button";
 
 export default {

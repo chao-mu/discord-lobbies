@@ -6,7 +6,7 @@ import ReadyEvent from "./ready";
 import JoinLobbyButtonEvent from "./join-lobby-button";
 import LeaveLobbyButtonEvent from "./leave-lobby-button";
 import JoinLobbyModalEvent from "./join-lobby-modal";
-import type { Event } from "@/types";
+import type { Event } from "@/discord/events";
 
 export const getEventHandlers = () => [
   ReadyEvent,

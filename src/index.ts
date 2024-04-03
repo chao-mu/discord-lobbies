@@ -2,8 +2,12 @@
 import { Client, GatewayIntentBits } from "discord.js";
 
 // Ours
-import { loadCommands, registerCommands, deployCommands } from "./commands";
-import { getEventHandlers, registerEvents } from "./events";
+import {
+  loadCommands,
+  registerCommands,
+  deployCommands,
+} from "./discord/commands";
+import { getEventHandlers, registerEvents } from "./discord/events";
 import { config } from "./config";
 
 (async () => {

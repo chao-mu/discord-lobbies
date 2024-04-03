@@ -1,20 +1,45 @@
 // Discord.js
-import { SlashCommandBuilder, Client, Events, REST, Routes } from "discord.js";
+import {
+  type RESTPostAPIApplicationCommandsJSONBody,
+  type ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  Routes,
+  Client,
+  Events,
+  REST,
+} from "discord.js";
 
 // Ours
+import { type DB, db } from "@/db";
 import { config } from "@/config";
-import { db } from "@/db";
-import type { Command, CommandBuilder } from "@/types";
 
 // Ours - Commands
-import PeekLobby from "./peek-lobby";
-import ShowLobby from "./show-lobby";
+import { getLobbyCommandBuilders } from "@/features/lobby/discord";
 
-export const commands: CommandBuilder[] = [PeekLobby, ShowLobby];
+export type CommandExecuter = {
+  execute(args: {
+    interaction: ChatInputCommandInteraction;
+    db: DB;
+  }): Promise<void> | void;
+};
+
+export type CommandBuilder = {
+  build: ({
+    builder,
+  }: {
+    builder: SlashCommandBuilder;
+  }) => Promise<SlashCommandBuilder>;
+} & CommandExecuter;
+
+export type Command = {
+  data: RESTPostAPIApplicationCommandsJSONBody;
+} & CommandExecuter;
+
+export const commandBuilders: CommandBuilder[] = getLobbyCommandBuilders();
 
 export async function loadCommands() {
   return Promise.all<Command>(
-    commands.map(async (command) => {
+    commandBuilders.map(async (command) => {
       const builder = await command.build({
         builder: new SlashCommandBuilder(),
       });
@@ -48,6 +73,7 @@ export async function deployCommands(commands: Command[], guildId: string) {
     console.error(`Error deploying commands: ${error}`);
   }
 }
+
 export function registerCommands(commands: Command[], client: Client): void {
   const commandLookup: Record<string, Command> = Object.fromEntries(
     commands.map((command) => [command.data.name, command]),

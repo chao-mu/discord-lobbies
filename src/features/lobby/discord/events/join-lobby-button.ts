@@ -2,12 +2,12 @@
 import { Events } from "discord.js";
 
 // Ours
-import type { Event } from "@/types";
+import type { Event } from "@/discord/events";
 import {
   buildJoinModal,
   getLobbyIdFromCustomId,
   joinLobbyButtonIdPrefix,
-} from "@/ui/lobby";
+} from "@/features/lobby/discord/ui";
 
 export default {
   name: Events.InteractionCreate,

@@ -1,13 +1,15 @@
 // Discord.js
 import type {
-  RESTPostAPIApplicationCommandsJSONBody,
   ChatInputCommandInteraction,
-  SlashCommandBuilder,
   ClientEvents,
+  Client,
 } from "discord.js";
 
 // Ours
 import type { DB } from "@/db";
+
+// Ours - Events
+import { getLobbyEventHandlers } from "@/features/lobby/discord";
 
 export type Event<T extends keyof ClientEvents = keyof ClientEvents> = {
   execute(...parameters: ClientEvents[T]): Promise<void> | void;
@@ -22,14 +24,12 @@ export type CommandExecuter = {
   }): Promise<void> | void;
 };
 
-export type CommandBuilder = {
-  build: ({
-    builder,
-  }: {
-    builder: SlashCommandBuilder;
-  }) => Promise<SlashCommandBuilder>;
-} & CommandExecuter;
+export const getEventHandlers = () => getLobbyEventHandlers();
 
-export type Command = {
-  data: RESTPostAPIApplicationCommandsJSONBody;
-} & CommandExecuter;
+export function registerEvents(events: Event[], client: Client) {
+  for (const event of events) {
+    client[event.once ? "once" : "on"](event.name, async (...args) =>
+      event.execute(...args),
+    );
+  }
+}

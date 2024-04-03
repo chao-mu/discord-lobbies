@@ -1,5 +1,5 @@
 // Ours
-import { Bulletin, Lobby } from "@/model/lobby";
+import { Bulletin, Lobby } from "@/features/lobby/model";
 
 // Discord.js
 import {

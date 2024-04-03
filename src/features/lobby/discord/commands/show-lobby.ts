@@ -4,15 +4,18 @@
 import { TextChannel } from "discord.js";
 
 // Ours
-import type { CommandBuilder } from "@/types";
+import type { CommandBuilder } from "@/discord/commands";
 import {
   getLobbies,
   getLobbyBulletins,
   getLobbyByName,
   upsertLobbyEmbed,
-} from "@/model/lobby";
+} from "@/features/lobby/model";
 import { db } from "@/db";
-import { buildLobbyEmbed, buildLobbyActions } from "@/ui/lobby";
+import {
+  buildLobbyEmbed,
+  buildLobbyActions,
+} from "@/features/lobby/discord/ui";
 
 export default {
   build: async ({ builder }) => {
