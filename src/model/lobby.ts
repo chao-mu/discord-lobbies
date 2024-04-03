@@ -2,7 +2,7 @@
 import { eq, and } from "drizzle-orm";
 
 // Ours
-import { lobbies, bulletins, users } from "@/db/schema";
+import { lobbies, bulletins, users, lobbiesEmbeds } from "@/db/schema";
 import { DB } from "@/db";
 import { timestampsDefaults } from "@/db/util";
 
@@ -80,8 +80,43 @@ export async function getLobbyByName(db: DB, name: string) {
   return lobbyResults[0];
 }
 
+export async function upsertLobbyEmbed({
+  db,
+  lobbyId,
+  discordChannelId,
+  discordMessageId,
+}: {
+  db: DB;
+  lobbyId: number;
+  discordChannelId: string;
+  discordMessageId: string;
+}) {
+  const { createdAt, updatedAt } = timestampsDefaults();
+
+  await db
+    .insert(lobbiesEmbeds)
+    .values({
+      discordChannelId,
+      discordMessageId,
+      lobbyId,
+      createdAt,
+      updatedAt,
+    })
+    .onConflictDoUpdate({
+      target: [lobbiesEmbeds.discordChannelId, lobbiesEmbeds.lobbyId],
+      set: { discordMessageId, updatedAt },
+    });
+}
+
 export async function leaveLobbies(db: DB, userId: number) {
   await db.delete(bulletins).where(eq(bulletins.userId, userId));
+}
+
+export async function getLobbyEmbeds(db: DB, lobbyId: number) {
+  return db
+    .select()
+    .from(lobbiesEmbeds)
+    .where(eq(lobbiesEmbeds.lobbyId, lobbyId));
 }
 
 export async function leaveLobby(db: DB, userId: number, lobbyId: number) {

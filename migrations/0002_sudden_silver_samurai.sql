@@ -1,0 +1,3 @@
+ALTER TABLE "lobbies_embeds" DROP CONSTRAINT "lobbies_embeds_lobby_id_discord_channel_id_discord_message_id_pk";--> statement-breakpoint
+ALTER TABLE "lobbies_embeds" ADD CONSTRAINT "lobbies_embeds_lobby_id_discord_channel_id_pk" PRIMARY KEY("lobby_id","discord_channel_id");--> statement-breakpoint
+ALTER TABLE "lobbies_embeds" ADD CONSTRAINT "lobbies_embeds_lobby_id_discord_channel_id_discord_message_id_unique" UNIQUE("lobby_id","discord_channel_id","discord_message_id");

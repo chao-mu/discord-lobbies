@@ -5,7 +5,12 @@ import { TextChannel } from "discord.js";
 
 // Ours
 import type { CommandBuilder } from "@/types";
-import { getLobbies, getLobbyBulletins, getLobbyByName } from "@/model/lobby";
+import {
+  getLobbies,
+  getLobbyBulletins,
+  getLobbyByName,
+  upsertLobbyEmbed,
+} from "@/model/lobby";
 import { db } from "@/db";
 import { buildLobbyEmbed, buildLobbyActions } from "@/ui/lobby";
 
@@ -45,9 +50,16 @@ export default {
     const lobby = await getLobbyByName(db, lobbyName);
     const bulletins = await getLobbyBulletins(db, guild.id, lobbyName);
 
-    await channel.send({
+    const message = await channel.send({
       embeds: [buildLobbyEmbed(lobby, bulletins)],
       components: [buildLobbyActions(lobby)],
+    });
+
+    await upsertLobbyEmbed({
+      db,
+      lobbyId: lobby.id,
+      discordChannelId: channel.id,
+      discordMessageId: message.id,
     });
 
     interaction.reply("✅ Success!");

@@ -5,6 +5,7 @@ import {
   timestamp,
   integer,
   unique,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -24,6 +25,28 @@ export const lobbies = pgTable("lobbies", {
   name: text("name").notNull().unique(),
   description: text("description").notNull().default(""),
 });
+
+export const lobbiesEmbeds = pgTable(
+  "lobbies_embeds",
+  {
+    ...timestamps,
+    discordChannelId: text("discord_channel_id").notNull(),
+    discordMessageId: text("discord_message_id").notNull(),
+    lobbyId: integer("lobby_id")
+      .notNull()
+      .references(() => lobbies.id),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.lobbyId, table.discordChannelId],
+    }),
+    unq: unique().on(
+      table.lobbyId,
+      table.discordChannelId,
+      table.discordMessageId,
+    ),
+  }),
+);
 
 export const bulletins = pgTable(
   "bulletins",

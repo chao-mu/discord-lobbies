@@ -8,6 +8,20 @@
       "when": 1708894325339,
       "tag": "0000_colossal_blue_shield",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712124754431,
+      "tag": "0001_absent_outlaw_kid",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712125014601,
+      "tag": "0002_sudden_silver_samurai",
+      "breakpoints": true
     }
   ]
 }
