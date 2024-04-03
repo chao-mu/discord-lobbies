@@ -1,11 +1,10 @@
-// Moment
-
 // Discord.js
 import { TextChannel } from "discord.js";
 
 // Ours
 import type { CommandBuilder } from "@/discord/commands";
 import {
+  deleteLobbyEmbeds,
   getLobbies,
   getLobbyBulletins,
   getLobbyByName,
@@ -16,6 +15,8 @@ import {
   buildLobbyEmbed,
   buildLobbyActions,
 } from "@/features/lobby/discord/ui";
+import { replyEphemeralSuccess } from "@/discord/util";
+import { purgeLobbyMessages } from "../util";
 
 export default {
   build: async ({ builder }) => {
@@ -53,11 +54,15 @@ export default {
     const lobby = await getLobbyByName(db, lobbyName);
     const bulletins = await getLobbyBulletins(db, guild.id, lobbyName);
 
+    // Clear existing ones
+    await purgeLobbyMessages({ db, lobby, channel });
+
     const message = await channel.send({
       embeds: [buildLobbyEmbed(lobby, bulletins)],
       components: [buildLobbyActions(lobby)],
     });
 
+    // Add the new one
     await upsertLobbyEmbed({
       db,
       lobbyId: lobby.id,
@@ -65,6 +70,6 @@ export default {
       discordMessageId: message.id,
     });
 
-    interaction.reply("✅ Success!");
+    await replyEphemeralSuccess(interaction);
   },
 } satisfies CommandBuilder;

@@ -37,7 +37,7 @@ export type Command = {
 
 export const commandBuilders: CommandBuilder[] = getLobbyCommandBuilders();
 
-export async function loadCommands() {
+export async function getCommands() {
   return Promise.all<Command>(
     commandBuilders.map(async (command) => {
       const builder = await command.build({

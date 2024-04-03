@@ -3,6 +3,8 @@ import JoinLobbyButtonEvent from "./events/join-lobby-button";
 import LeaveLobbyButtonEvent from "./events/leave-lobby-button";
 import JoinLobbyModalEvent from "./events/join-lobby-modal";
 
+import ShowLobbyCommandBuilder from "./commands/show-lobby";
+
 export const getLobbyEventHandlers = () => [
   LobbyReadyEvent,
   JoinLobbyButtonEvent,
@@ -10,4 +12,4 @@ export const getLobbyEventHandlers = () => [
   JoinLobbyModalEvent,
 ];
 
-export const getLobbyCommandBuilders = () => [];
+export const getLobbyCommandBuilders = () => [ShowLobbyCommandBuilder];

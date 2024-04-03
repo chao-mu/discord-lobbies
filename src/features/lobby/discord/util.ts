@@ -1,15 +1,37 @@
 // Discord.js
-import { DiscordAPIError, Guild } from "discord.js";
+import { DiscordAPIError, Guild, TextChannel } from "discord.js";
 
 // Ours
 import { DB } from "@/db";
 import {
   Lobby,
-  deleteLobbyEmbedByChannelId,
+  deleteLobbyEmbeds,
   getLobbyBulletins,
   getLobbyEmbeds,
 } from "../model";
 import { buildLobbyEmbed, buildLobbyActions } from "./ui";
+
+export async function purgeLobbyMessages({
+  db,
+  lobby,
+  channel,
+}: {
+  db: DB;
+  lobby: Lobby;
+  channel: TextChannel;
+}) {
+  const existingEmbeds = await getLobbyEmbeds(db, lobby.id);
+  for (const { discordChannelId, discordMessageId } of existingEmbeds) {
+    if (discordChannelId != channel.id) {
+      continue;
+    }
+
+    const message = await channel.messages.fetch(discordMessageId);
+    await message.delete();
+  }
+
+  await deleteLobbyEmbeds(db, lobby.id, channel.id);
+}
 
 export async function broadcastLobbyUpdate({
   db,
@@ -33,7 +55,7 @@ export async function broadcastLobbyUpdate({
       .catch((err) => {
         // Unknown Channel (channel potentially deleted)
         if ("code" in err && err.code == 10003) {
-          deleteLobbyEmbedByChannelId(db, discordChannelId);
+          deleteLobbyEmbeds(db, lobby.id, discordChannelId);
           return;
         }
 

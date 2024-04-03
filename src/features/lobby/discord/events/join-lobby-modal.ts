@@ -11,6 +11,7 @@ import { getLobby, joinLobby } from "@/features/lobby/model";
 import { db } from "@/db";
 import { getOrUpsertUser } from "@/features/user/model";
 import { broadcastLobbyUpdate } from "../util";
+import { replyEphemeralSuccess } from "@/discord/util";
 
 export default {
   name: Events.InteractionCreate,
@@ -47,6 +48,9 @@ export default {
 
     broadcastLobbyUpdate({ db, lobby, guild: interaction.guild });
 
-    await interaction.reply(`✅ You have joined the ${lobby.name} lobby.`);
+    replyEphemeralSuccess(
+      interaction,
+      `You have joined the ${lobby.name} lobby.`,
+    );
   },
 } satisfies Event<Events.InteractionCreate>;

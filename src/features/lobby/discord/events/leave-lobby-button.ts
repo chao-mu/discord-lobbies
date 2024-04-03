@@ -11,6 +11,7 @@ import { getLobby, leaveLobby } from "@/features/lobby/model";
 import { db } from "@/db";
 import { getOrUpsertUser } from "@/features/user/model";
 import { broadcastLobbyUpdate } from "../util";
+import { replyEphemeralSuccess } from "@/discord/util";
 
 export default {
   name: Events.InteractionCreate,
@@ -26,6 +27,9 @@ export default {
     await leaveLobby(db, user.id, lobbyId);
     await broadcastLobbyUpdate({ db, lobby, guild: interaction.guild });
 
-    interaction.reply(`✅ You are no longer in the ${lobby.name} lobby.`);
+    replyEphemeralSuccess(
+      interaction,
+      `You are no longer in the ${lobby.name} lobby.`,
+    );
   },
 } satisfies Event<Events.InteractionCreate>;

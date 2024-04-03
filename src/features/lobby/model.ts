@@ -112,13 +112,19 @@ export async function leaveLobbies(db: DB, userId: number) {
   await db.delete(bulletins).where(eq(bulletins.userId, userId));
 }
 
-export async function deleteLobbyEmbedByChannelId(
+export async function deleteLobbyEmbeds(
   db: DB,
+  lobbyId: number,
   discordChannelId: string,
 ) {
   await db
     .delete(lobbiesEmbeds)
-    .where(eq(lobbiesEmbeds.discordChannelId, discordChannelId));
+    .where(
+      and(
+        eq(lobbiesEmbeds.lobbyId, lobbyId),
+        eq(lobbiesEmbeds.discordChannelId, discordChannelId),
+      ),
+    );
 }
 
 export async function getLobbyEmbeds(db: DB, lobbyId: number) {

@@ -3,7 +3,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 
 // Ours
 import {
-  loadCommands,
+  getCommands,
   registerCommands,
   deployCommands,
 } from "./discord/commands";
@@ -11,15 +11,15 @@ import { getEventHandlers, registerEvents } from "./discord/events";
 import { config } from "./config";
 
 (async () => {
-  const commands = await loadCommands();
-  const eventHandlers = getEventHandlers();
-
   // Initialize the client
   const client = new Client({
     intents: [GatewayIntentBits.Guilds],
   });
 
+  const commands = await getCommands();
   registerCommands(commands, client);
+
+  const eventHandlers = getEventHandlers();
   registerEvents(eventHandlers, client);
 
   deployCommands(commands, config.testGuildId);
